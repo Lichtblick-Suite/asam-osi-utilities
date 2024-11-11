@@ -51,3 +51,23 @@ It creates the example file `example_native_binary_writer.osi` in the temp direc
 ```bash
 ./example_native_binary_writer
 ```
+
+### example_txth_reader
+
+This example demonstrates how to read a human-readable txth trace file into your application.
+It simply prints the message types and timestamps of the OSI trace file.
+You can try it with an example osi trace file generated with `example_txth_writer` (see following section) with
+
+```bash
+./example_native_binary_reader /tmp/example_txth_writer.txth --type SensorView
+```
+
+### example_txth_writer
+
+This example demonstrates how to write OSI data to a human-readable txth file from your application.
+As an example, a SensorView message with one moving object is created and written to the txth file.
+It creates the example file `example_txth_writer.txth` in the temp directory of your operating system, on Linx this is `/tmp`.
+
+```bash
+./example_txth_writer
+```
