@@ -29,10 +29,10 @@ sudo apt install build-essential cmake libzstd-dev liblz4-dev protobuf-compiler
 
 ### Build 
 
-Clone the repository
+Clone the repository incl. submodules
 
 ```bash
-git clone https://github.com/OpenSimulationInterface/osi-utilities.git
+git clone --recurse-submodules https://github.com/OpenSimulationInterface/osi-utilities.git
 ```
 
 Create build directory and configure using CMake
