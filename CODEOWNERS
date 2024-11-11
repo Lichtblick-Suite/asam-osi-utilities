@@ -1,0 +1,11 @@
+# github CODEOWNERS file to define owners of (sub) directories.
+# Find a detailed description for github CODEOWNERS here:
+# https://docs.github.com/de/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# Each line is a file pattern followed by one or more owners.
+
+# root directory and default handling (repository maintainer). Subsequent definitions will overwrite a previous definition.
+# Create an issue if you are interested in becoming a maintainer.
+/* @jdsika @ClemensLinnhoff @TimmRuppert
+
+# examples directory
+#/examples @user_1 @user_2
