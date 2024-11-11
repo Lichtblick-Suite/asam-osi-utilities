@@ -142,17 +142,17 @@ int main(const int argc, const char** argv) {
     // Open the trace file
     // downstream functions of Open will guess the message type from the filename (options->message_type has the unknown value)
     // or use the provided cli argument value for the message type
-    auto tracefile_reader = osi3::TxthTraceFileReader();
-    if (!tracefile_reader.Open(options->file_path, options->message_type)) {
+    auto trace_file_reader = osi3::TxthTraceFileReader();
+    if (!trace_file_reader.Open(options->file_path, options->message_type)) {
         std::cerr << "Error: Could not open file '" << options->file_path << "'\n\n";
         return 1;
     }
     std::cout << "Opened file " << options->file_path << std::endl;
 
     // Continuously read messages from file
-    while (tracefile_reader.HasNext()) {
+    while (trace_file_reader.HasNext()) {
         std::cout << "reading next message\n";
-        const auto reading_result = tracefile_reader.ReadMessage();
+        const auto reading_result = trace_file_reader.ReadMessage();
         CastMsgAndPrintTimestamp(reading_result);
     }
 

@@ -48,13 +48,13 @@ int main(const int argc, const char** argv) {
     }
 
     // Create reader and open file
-    auto tracefile_reader = osi3::MCAPTraceFileReader();
+    auto trace_file_reader = osi3::MCAPTraceFileReader();
     std::cout << "Reading trace file from " << trace_file_path << std::endl;
-    tracefile_reader.Open(trace_file_path);
+    trace_file_reader.Open(trace_file_path);
 
     // Read messages in a loop until no more messages are available
-    while (tracefile_reader.HasNext()) {
-        const auto reading_result = tracefile_reader.ReadMessage();
+    while (trace_file_reader.HasNext()) {
+        const auto reading_result = trace_file_reader.ReadMessage();
         if (!reading_result) {
             std::cerr << "Error reading message." << std::endl;
             continue;
@@ -114,7 +114,7 @@ int main(const int argc, const char** argv) {
         }
     }
 
-    tracefile_reader.Close();
+    trace_file_reader.Close();
 
     std::cout << "Finished MCAP Reader example" << std::endl;
     return 0;

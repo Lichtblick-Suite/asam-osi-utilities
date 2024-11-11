@@ -139,21 +139,21 @@ int main(const int argc, const char** argv) {
     std::cout << "Input file: " << options->input_file_path << std::endl;
     std::cout << "Output file: " << options->output_file_path << std::endl;
 
-    auto tracefile_reader = osi3::NativeBinaryTraceFileReader();
-    if (!tracefile_reader.Open(options->input_file_path, options->message_type)) {
+    auto trace_file_reader = osi3::NativeBinaryTraceFileReader();
+    if (!trace_file_reader.Open(options->input_file_path, options->message_type)) {
         std::cerr << "ERROR: Could not open input file " << options->input_file_path << std::endl;
         return 1;
     }
 
-    auto tracefile_writer = osi3::MCAPTraceFileWriter();
-    if (!tracefile_writer.Open(options->output_file_path)) {
+    auto trace_file_writer = osi3::MCAPTraceFileWriter();
+    if (!trace_file_writer.Open(options->output_file_path)) {
         std::cerr << "ERROR: Could not open output file " << options->output_file_path << std::endl;
         return 1;
     }
 
     const google::protobuf::Descriptor* descriptor = nullptr;
     try {
-        descriptor = GetDescriptorForMessageType(tracefile_reader.GetMessageType());
+        descriptor = GetDescriptorForMessageType(trace_file_reader.GetMessageType());
     } catch (const std::runtime_error& e) {
         std::cerr << "ERROR: " << e.what() << std::endl;
         return 1;
@@ -163,12 +163,12 @@ int main(const int argc, const char** argv) {
         return 1;
     }
 
-    tracefile_writer.AddChannel("ConvertedTrace", descriptor);
+    trace_file_writer.AddChannel("ConvertedTrace", descriptor);
 
-    while (tracefile_reader.HasNext()) {
+    while (trace_file_reader.HasNext()) {
         std::cout << "reading next message\n";
-        auto reading_result = tracefile_reader.ReadMessage();
-        ProcessMessage(reading_result, tracefile_writer);
+        auto reading_result = trace_file_reader.ReadMessage();
+        ProcessMessage(reading_result, trace_file_writer);
     }
     std::cout << "Finished native binary to mcap converter" << std::endl;
     return 0;

@@ -19,15 +19,15 @@ int main(int argc, const char** argv) {
     std::cout << "Starting MCAP Writer example:" << std::endl;
 
     // Create writer and open file
-    auto tracefile_writer = osi3::MCAPTraceFileWriter();
-    const auto tracefile_path = GenerateTempFilePath();
-    std::cout << "Creating tracefile at " << tracefile_path << std::endl;
-    tracefile_writer.Open(tracefile_path);
+    auto trace_file_writer = osi3::MCAPTraceFileWriter();
+    const auto trace_file_path = GenerateTempFilePath();
+    std::cout << "Creating trace_file at " << trace_file_path << std::endl;
+    trace_file_writer.Open(trace_file_path);
 
     // add a channel to store some data
     const std::string topic = "Sensor_1_Input";
     const std::unordered_map<std::string, std::string> channel_metadata = {{"description", "This channel contains the output of the sensor 1"}};
-    tracefile_writer.AddChannel(topic, osi3::SensorView::descriptor(), channel_metadata);
+    trace_file_writer.AddChannel(topic, osi3::SensorView::descriptor(), channel_metadata);
 
     // create OSI data to store
     const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
@@ -62,10 +62,10 @@ int main(int argc, const char** argv) {
         host_vehicle->mutable_base()->mutable_position()->set_x(new_position);
 
         // finally write the data using topic
-        tracefile_writer.WriteMessage(sensor_view_1, topic);
+        trace_file_writer.WriteMessage(sensor_view_1, topic);
     }
 
-    tracefile_writer.Close();
+    trace_file_writer.Close();
 
     std::cout << "Finished MCAP Writer example" << std::endl;
 }

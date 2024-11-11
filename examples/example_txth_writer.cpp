@@ -18,10 +18,10 @@ int main(int argc, const char** argv) {
     std::cout << "Starting TXTH Writer example:" << std::endl;
 
     // Create writer and open file
-    auto tracefile_writer = osi3::TxthTraceFileWriter();
-    const auto tracefile_path = GenerateTempFilePath();
-    std::cout << "Creating tracefile at " << tracefile_path << std::endl;
-    tracefile_writer.Open(tracefile_path);
+    auto trace_file_writer = osi3::TxthTraceFileWriter();
+    const auto trace_file_path = GenerateTempFilePath();
+    std::cout << "Creating trace_file at " << trace_file_path << std::endl;
+    trace_file_writer.Open(trace_file_path);
 
     // create OSI data to store
     const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
@@ -56,10 +56,10 @@ int main(int argc, const char** argv) {
         host_vehicle->mutable_base()->mutable_position()->set_x(new_position);
 
         // write the data
-        tracefile_writer.WriteMessage(sensor_view);
+        trace_file_writer.WriteMessage(sensor_view);
     }
 
-    tracefile_writer.Close();
+    trace_file_writer.Close();
 
     std::cout << "Finished TXTH Writer example" << std::endl;
     return 0;
