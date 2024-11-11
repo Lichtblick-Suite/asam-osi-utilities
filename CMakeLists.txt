@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(osi-utilities)
 
 # Som features (e.g. mcap) require at least C++17
-if (NOT DEFINED CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 17)
-endif()
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Generate compile_commands.json for clang based tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
