@@ -59,7 +59,7 @@ It simply prints the message types and timestamps of the OSI trace file.
 You can try it with an example osi trace file generated with `example_txth_writer` (see following section) with
 
 ```bash
-./example_native_binary_reader /tmp/example_txth_writer.txth --type SensorView
+./example_txth_reader /tmp/example_txth_writer.txth --type SensorView
 ```
 
 ### example_txth_writer
