@@ -24,19 +24,33 @@ void PrintTimestamp(T msg) {
     std::cout << "Type: " << msg->descriptor()->full_name() << " Timestamp " << timestamp << "\n";
 }
 
-std::string GetTempFilePath() {
-    const auto path = std::filesystem::temp_directory_path() / "example_mcap.mcap";
-    return path.string();
+void printHelp() {
+    std::cout << "Usage: example_mcap_reader <input_file> \n\n"
+              << "Arguments:\n"
+              << "  input_file              Path to the input OSI MCAP trace file\n";
 }
 
-int main(int argc, const char** argv) {
+std::string parseArgs(const int argc, const char** argv) {
+    if (argc < 2 || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
+        printHelp();
+        return "";
+    }
+
+    return argv[1];
+}
+
+int main(const int argc, const char** argv) {
     std::cout << "Starting MCAP Reader example:" << std::endl;
+
+    const auto trace_file_path = parseArgs(argc, argv);
+    if (trace_file_path.empty()) {
+        return 1;
+    }
 
     // Create reader and open file
     auto tracefile_reader = osi3::MCAPTraceFileReader();
-    const auto tracefile_path = GetTempFilePath();
-    std::cout << "Reading tracefile from " << tracefile_path << std::endl;
-    tracefile_reader.Open(tracefile_path);
+    std::cout << "Reading trace file from " << trace_file_path << std::endl;
+    tracefile_reader.Open(trace_file_path);
 
     // Read messages in a loop until no more messages are available
     while (tracefile_reader.HasNext()) {
