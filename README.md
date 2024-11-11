@@ -48,6 +48,11 @@ Build using CMake
 cmake --build . -j4
 ```
 
+## Examples
+
+Check out the examples in the [examples](examples) folder.
+Further information can be found in the [examples/README.md](examples/README.md).
+
 ## Contributing
 
 We welcome contributions!
