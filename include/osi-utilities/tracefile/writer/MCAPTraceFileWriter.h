@@ -36,6 +36,16 @@ class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
 
     void Close() override;
 
+   /**
+   * @brief Gets the underlying MCAP writer instance
+   * @return Pointer to the internal McapWriter object
+   *
+   * This function can be useful for advanced operations
+   * like adding non-OSI message which requires direct access to
+   * underlying the MCAP writer.
+   */
+    mcap::McapWriter* GetMcapWriter() { return &mcap_writer_; }
+
    private:
     mcap::McapWriter mcap_writer_;                        /**< MCAP writer instance */
     mcap::McapWriterOptions mcap_options_{"protobuf"};    /**< MCAP writer configuration */

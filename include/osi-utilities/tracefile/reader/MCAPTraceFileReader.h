@@ -35,12 +35,22 @@ class MCAPTraceFileReader final : public TraceFileReader {
     void Close() override;
     bool HasNext() override;
 
+   /**
+    * @brief Sets whether to skip non-OSI messages during reading
+    * @param skip If true, non-OSI messages will be skipped during reading. If false, all messages will be processed
+    *
+    * If the file contains non-OSI messages and this option is not set to true, an exception will be thrown.
+    */
+   void SetSkipNonOSIMsgs(const bool skip) {
+        skip_non_osi_msgs_ = skip;
+    }
+
    private:
     mcap::McapReader mcap_reader_;
     std::unique_ptr<mcap::LinearMessageView> message_view_;  // Cannot copy or move LinearMessageView
     std::unique_ptr<mcap::LinearMessageView::Iterator> message_iterator_;
 
-    bool skip_non_osi_msgs_ = false;  // todo add setter
+    bool skip_non_osi_msgs_ = false;
 
     /**
      * @brief Template function to deserialize MCAP messages into specific OSI message types
