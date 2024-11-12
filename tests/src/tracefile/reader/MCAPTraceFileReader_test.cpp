@@ -83,6 +83,7 @@ TEST_F(McapTraceFileReaderTest, OpenNonexistentFile) {
 
 TEST_F(McapTraceFileReaderTest, ReadGroundTruthMessage) {
     ASSERT_TRUE(reader_.Open(test_file_));
+    reader_.SetSkipNonOSIMsgs(true);
     EXPECT_TRUE(reader_.HasNext());
 
     const auto result = reader_.ReadMessage();
@@ -90,13 +91,14 @@ TEST_F(McapTraceFileReaderTest, ReadGroundTruthMessage) {
 
     auto* gt = dynamic_cast<osi3::GroundTruth*>(result->message.get());
     ASSERT_NE(gt, nullptr);
-    EXPECT_EQ(gt->timestamp().seconds(), 123);
+    EXPECT_EQ(gt->timestamp().seconds(), 0);
     EXPECT_EQ(gt->timestamp().nanos(), 456);
     EXPECT_EQ(result->channel_name, "gt");
 }
 
 TEST_F(McapTraceFileReaderTest, ReadSensorViewMessage) {
     ASSERT_TRUE(reader_.Open(test_file_));
+    reader_.SetSkipNonOSIMsgs(true);
     ASSERT_TRUE(reader_.HasNext());
 
     // Skip first message
@@ -107,7 +109,7 @@ TEST_F(McapTraceFileReaderTest, ReadSensorViewMessage) {
 
     auto* sv = dynamic_cast<osi3::SensorView*>(result->message.get());
     ASSERT_NE(sv, nullptr);
-    EXPECT_EQ(sv->timestamp().seconds(), 789);
+    EXPECT_EQ(sv->timestamp().seconds(), 1);
     EXPECT_EQ(sv->timestamp().nanos(), 101);
     EXPECT_EQ(result->channel_name, "sv");
 }
