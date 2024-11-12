@@ -2,7 +2,7 @@
 
 ![Build](https://github.com/OpenSimulationInterface/osi-utilities/actions/workflows/ubuntu.yml/badge.svg)
 
-Utility library providing companion tools, helpers and best practices for working with the [ASAM Open Simulation Interface (OSI)](https://github.com/OpenSimulationInterface/open-simulation-interface/c) standard.
+Utility library providing companion tools, helpers and best practices for working with the [ASAM Open Simulation Interface (OSI)](https://opensimulationinterface.github.io/osi-antora-generator/asamosi/latest/specification/index.html) standard.
 
 ## Features
 - Cross-platform C++ library and Python APIs
