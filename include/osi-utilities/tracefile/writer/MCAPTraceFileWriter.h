@@ -19,7 +19,7 @@ namespace osi3 {
  */
 class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
    public:
-    bool Open(const std::string& filename) override;
+    bool Open(const std::string& file_path) override;
 
     template <typename T>
     bool WriteMessage(T top_level_message, const std::string& topic = "");

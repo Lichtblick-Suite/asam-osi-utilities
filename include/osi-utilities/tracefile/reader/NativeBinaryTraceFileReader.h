@@ -28,7 +28,7 @@ namespace osi3 {
  */
 class NativeBinaryTraceFileReader final : public osi3::TraceFileReader {
    public:
-    bool Open(const std::string& filename) override;
+    bool Open(const std::string& file_path) override;
 
     /**
      * @brief Opens a trace file with specified message type

@@ -42,10 +42,10 @@ class TraceFileWriter {
 
     /**
      * @brief Opens a file for writing
-     * @param filename Path to the file to be created/opened
+     * @param file_path Path to the file to be created/opened
      * @return true if successful, false otherwise
      */
-    virtual bool Open(const std::string& filename) = 0;
+    virtual bool Open(const std::string& file_path) = 0;
 
     /**
      * @brief Writes a protobuf message to the file

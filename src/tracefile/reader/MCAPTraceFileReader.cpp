@@ -9,13 +9,13 @@
 
 namespace osi3 {
 
-bool MCAPTraceFileReader::Open(const std::string& filename) {
-    if (!std::filesystem::exists(filename)) {
-        std::cerr << "ERROR: The trace file '" << filename << "' does not exist." << std::endl;
+bool MCAPTraceFileReader::Open(const std::string& file_path) {
+    if (!std::filesystem::exists(file_path)) {
+        std::cerr << "ERROR: The trace file '" << file_path << "' does not exist." << std::endl;
         return false;
     }
 
-    if (const auto status = mcap_reader_.open(filename); !status.ok()) {
+    if (const auto status = mcap_reader_.open(file_path); !status.ok()) {
         std::cerr << "ERROR: Failed to open MCAP file: " << status.message << std::endl;
         return false;
     }

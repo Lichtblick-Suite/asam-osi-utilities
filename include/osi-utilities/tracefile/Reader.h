@@ -78,10 +78,10 @@ class TraceFileReader {
 
     /**
      * @brief Opens a trace file for reading
-     * @param filename Path to the file to be opened
+     * @param file_path Path to the file to be opened
      * @return true if successful, false otherwise
      */
-    virtual bool Open(const std::string& filename) = 0;
+    virtual bool Open(const std::string& file_path) = 0;
 
     /**
      * @brief Reads the next message from the trace file
@@ -104,7 +104,7 @@ class TraceFileReader {
 // TODO change to function which guesses on the filename endings
 /**
  * @brief Factory function to create trace file readers based on the input file format
- * @param format The format of the input file (e.g., "mcap")
+ * @param  The format of the input file (e.g., "mcap")
  * @return Unique pointer to a TraceFileReader implementation
  */
 std::unique_ptr<TraceFileReader> createTraceFileReader(const std::string& format);

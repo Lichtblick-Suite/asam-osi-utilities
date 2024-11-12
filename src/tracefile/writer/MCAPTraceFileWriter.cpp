@@ -55,8 +55,8 @@ std::string GetCurrentTimeString() {
 }  // namespace
 
 namespace osi3 {
-bool MCAPTraceFileWriter::Open(const std::string& filename) {
-    const auto res = mcap_writer_.open(filename, mcap_options_);
+bool MCAPTraceFileWriter::Open(const std::string& file_path) {
+    const auto res = mcap_writer_.open(file_path, mcap_options_);
     if (res.ok()) {
         file_open_ = true;
         this->AddCommonMetadata();

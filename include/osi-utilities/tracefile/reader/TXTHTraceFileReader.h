@@ -38,7 +38,7 @@ class TXTHTraceFileReader final : public TraceFileReader {
     using MessageParserFunc = std::function<std::unique_ptr<google::protobuf::Message>(const std::string&)>;
 
    public:
-    bool Open(const std::string& filename) override;
+    bool Open(const std::string& file_path) override;
     /**
      * @brief Opens a trace file with specified message type
      * @param filename Path to the trace file

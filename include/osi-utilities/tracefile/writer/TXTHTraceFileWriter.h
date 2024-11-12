@@ -20,7 +20,7 @@ namespace osi3 {
  */
 class TXTHTraceFileWriter final : public TraceFileWriter {
    public:
-    bool Open(const std::string& filename) override;
+    bool Open(const std::string& file_path) override;
     void Close() override;
 
     bool SetMetadata(const std::string& name, const std::unordered_map<std::string, std::string>& metadata_entries) override { return false; }
@@ -30,7 +30,8 @@ class TXTHTraceFileWriter final : public TraceFileWriter {
 
    private:
     std::ofstream trace_file_;
-    bool file_open_{false};
+    bool file_open_ = false;
+
 };
 
 }  // namespace osi3

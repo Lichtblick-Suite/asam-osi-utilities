@@ -30,7 +30,7 @@ namespace osi3 {
  */
 class MCAPTraceFileReader final : public TraceFileReader {
    public:
-    bool Open(const std::string& filename) override;
+    bool Open(const std::string& file_path) override;
     std::optional<ReadResult> ReadMessage() override;
     void Close() override;
     bool HasNext() override;

@@ -17,13 +17,13 @@
 
 namespace osi3 {
 
-bool NativeBinaryTraceFileWriter::Open(const std::string& filename) {
-    if (filename.substr(filename.length() - 4) != ".osi") {
+bool NativeBinaryTraceFileWriter::Open(const std::string& file_path) {
+    if (file_path.substr(file_path.length() - 4) != ".osi") {
         std::cerr << "Error: Filename must end with .osi extension\n";
         return false;
     }
 
-    trace_file_.open(filename, std::ios::binary);
+    trace_file_.open(file_path, std::ios::binary);
     if (trace_file_.is_open()) {
         file_open_ = true;
         return true;

@@ -19,13 +19,13 @@
 
 namespace osi3 {
 
-bool TXTHTraceFileWriter::Open(const std::string& filename) {
-    if (filename.substr(filename.length() - 5) != ".txth") {
+bool TXTHTraceFileWriter::Open(const std::string& file_path) {
+    if (file_path.substr(file_path.length() - 5) != ".txth") {
         std::cerr << "Error: Filename must end with .txth extension\n";
         return false;
     }
 
-    trace_file_.open(filename);
+    trace_file_.open(file_path);
     if (trace_file_.is_open()) {
         file_open_ = true;
         return true;

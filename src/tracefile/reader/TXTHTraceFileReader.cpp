@@ -9,20 +9,20 @@
 
 namespace osi3 {
 
-bool TXTHTraceFileReader::Open(const std::string& filename) {
-    if (filename.find(".txth") == std::string::npos) {
-        std::cerr << "ERROR: The trace file '" << filename << "' must have a '.txth' extension." << std::endl;
+bool TXTHTraceFileReader::Open(const std::string& file_path) {
+    if (file_path.find(".txth") == std::string::npos) {
+        std::cerr << "ERROR: The trace file '" << file_path << "' must have a '.txth' extension." << std::endl;
         return false;
     }
 
-    if (!std::filesystem::exists(filename)) {
-        std::cerr << "ERROR: The trace file '" << filename << "' does not exist." << std::endl;
+    if (!std::filesystem::exists(file_path)) {
+        std::cerr << "ERROR: The trace file '" << file_path << "' does not exist." << std::endl;
         return false;
     }
 
     if (message_type_ == ReaderTopLevelMessage::kUnknown) {
         for (const auto& [key, value] : kFileNameMessageTypeMap) {
-            if (filename.find(key) != std::string::npos) {
+            if (file_path.find(key) != std::string::npos) {
                 message_type_ = value;
                 break;
             }
@@ -36,7 +36,7 @@ bool TXTHTraceFileReader::Open(const std::string& filename) {
 
     parser_ = kParserMap_.at(message_type_);
 
-    trace_file_ = std::ifstream(filename);
+    trace_file_ = std::ifstream(file_path);
 
     // find top-level message delimiter by peeking into the file and assuming the first line
     // will be the pattern to indicate a new message

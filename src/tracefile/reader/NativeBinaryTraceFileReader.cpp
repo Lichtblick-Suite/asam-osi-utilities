@@ -15,23 +15,23 @@ bool NativeBinaryTraceFileReader::Open(const std::string& filename, const Reader
     return this->Open(filename);
 }
 
-bool NativeBinaryTraceFileReader::Open(const std::string& filename) {
+bool NativeBinaryTraceFileReader::Open(const std::string& file_path) {
     // check if at least .osi ending is present
-    if (filename.find(".osi") == std::string::npos) {
-        std::cerr << "ERROR: The trace file '" << filename << "' must have a '.osi' extension." << std::endl;
+    if (file_path.find(".osi") == std::string::npos) {
+        std::cerr << "ERROR: The trace file '" << file_path << "' must have a '.osi' extension." << std::endl;
         return false;
     }
 
     // check if file exists
-    if (!std::filesystem::exists(filename)) {
-        std::cerr << "ERROR: The trace file '" << filename << "' does not exist." << std::endl;
+    if (!std::filesystem::exists(file_path)) {
+        std::cerr << "ERROR: The trace file '" << file_path << "' does not exist." << std::endl;
         return false;
     }
 
     // Determine message type based on filename if not specified in advance
     if (message_type_ == ReaderTopLevelMessage::kUnknown) {
         for (const auto& [key, value] : kFileNameMessageTypeMap) {
-            if (filename.find(key) != std::string::npos) {
+            if (file_path.find(key) != std::string::npos) {
                 message_type_ = value;
                 break;
             }
@@ -39,7 +39,7 @@ bool NativeBinaryTraceFileReader::Open(const std::string& filename) {
     }
     // if message_type_ is still unknown, return false
     if (message_type_ == ReaderTopLevelMessage::kUnknown) {
-        std::cerr << "ERROR: Unable to determine message type from the filename '" << filename
+        std::cerr << "ERROR: Unable to determine message type from the filename '" << file_path
                   << "'. Please ensure the filename follows the recommended OSI naming conventions as specified in the documentation or specify the message type manually."
                   << std::endl;
         return false;
@@ -47,9 +47,9 @@ bool NativeBinaryTraceFileReader::Open(const std::string& filename) {
 
     parser_ = kParserMap_.at(message_type_);
 
-    trace_file_ = std::ifstream(filename, std::ios::binary);
+    trace_file_ = std::ifstream(file_path, std::ios::binary);
     if (!trace_file_) {
-        std::cerr << "ERROR: Failed to open trace file: " << filename << std::endl;
+        std::cerr << "ERROR: Failed to open trace file: " << file_path << std::endl;
         return false;
     }
     return true;
