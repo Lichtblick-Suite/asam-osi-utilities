@@ -2,7 +2,7 @@
 // Copyright (c) 2024, Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 // SPDX-License-Identifier: MPL-2.0
 //
-#include <osi-utilities/tracefile/writer/txthTraceFileWriter.h>
+#include <osi-utilities/tracefile/writer/TXTHTraceFileWriter.h>
 
 #include <filesystem>
 
@@ -18,7 +18,7 @@ int main(int argc, const char** argv) {
     std::cout << "Starting TXTH Writer example:" << std::endl;
 
     // Create writer and open file
-    auto trace_file_writer = osi3::TxthTraceFileWriter();
+    auto trace_file_writer = osi3::TXTHTraceFileWriter();
     const auto trace_file_path = GenerateTempFilePath();
     std::cout << "Creating trace_file at " << trace_file_path << std::endl;
     trace_file_writer.Open(trace_file_path);

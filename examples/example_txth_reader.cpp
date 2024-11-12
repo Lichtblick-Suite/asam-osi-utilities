@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#include <osi-utilities/tracefile/reader/txthTraceFileReader.h>
+#include <osi-utilities/tracefile/reader/TXTHTraceFileReader.h>
 
 #include <optional>
 
