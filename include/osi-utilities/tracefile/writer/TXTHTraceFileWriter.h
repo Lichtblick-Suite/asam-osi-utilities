@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#ifndef OSIUTILITIES_TRACEFILE_WRITER_TXTHTRACEFILEWRITER_H_
-#define OSIUTILITIES_TRACEFILE_WRITER_TXTHTRACEFILEWRITER_H_
+#ifndef OSIUTILITIES_TRACEFILE_WRITER_TXTHTraceFileWriter_H_
+#define OSIUTILITIES_TRACEFILE_WRITER_TXTHTraceFileWriter_H_
 
 #include <fstream>
 
@@ -18,7 +18,7 @@ namespace osi3 {
  * This class provides functionality to write OSI messages to text format files.
  * It converts protobuf messages to their text representation for human-readable storage.
  */
-class TxthTraceFileWriter final : public TraceFileWriter {
+class TXTHTraceFileWriter final : public TraceFileWriter {
    public:
     bool Open(const std::string& filename) override;
     void Close() override;
@@ -34,4 +34,4 @@ class TxthTraceFileWriter final : public TraceFileWriter {
 };
 
 }  // namespace osi3
-#endif  // OSIUTILITIES_TRACEFILE_WRITER_TXTHTRACEFILEWRITER_H_
+#endif  // OSIUTILITIES_TRACEFILE_WRITER_TXTHTraceFileWriter_H_

@@ -4,7 +4,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "osi-utilities/tracefile/reader/txthTraceFileReader.h"
+#include "osi-utilities/tracefile/reader/TXTHTraceFileReader.h"
 #include "osi_groundtruth.pb.h"
 #include "osi_sensorview.pb.h"
 
@@ -13,7 +13,7 @@
 
 class TxthTraceFileReaderTest : public ::testing::Test {
 protected:
-    osi3::TxthTraceFileReader reader_;
+    osi3::TXTHTraceFileReader reader_;
     const std::string test_file_gt_ = "test_gt_.txth";
     const std::string test_file_sv_ = "test_sv_.txth";
 

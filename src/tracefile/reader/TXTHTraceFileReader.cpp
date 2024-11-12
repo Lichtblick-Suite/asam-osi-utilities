@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#include "osi-utilities/tracefile/reader/txthTraceFileReader.h"
+#include "osi-utilities/tracefile/reader/TXTHTraceFileReader.h"
 
 #include <filesystem>
 
 namespace osi3 {
 
-bool TxthTraceFileReader::Open(const std::string& filename) {
+bool TXTHTraceFileReader::Open(const std::string& filename) {
     if (filename.find(".txth") == std::string::npos) {
         std::cerr << "ERROR: The trace file '" << filename << "' must have a '.txth' extension." << std::endl;
         return false;
@@ -46,16 +46,16 @@ bool TxthTraceFileReader::Open(const std::string& filename) {
     return trace_file_.is_open();
 }
 
-bool TxthTraceFileReader::Open(const std::string& filename, const ReaderTopLevelMessage message_type) {
+bool TXTHTraceFileReader::Open(const std::string& filename, const ReaderTopLevelMessage message_type) {
     message_type_ = message_type;
     return Open(filename);
 }
 
-void TxthTraceFileReader::Close() { trace_file_.close(); }
+void TXTHTraceFileReader::Close() { trace_file_.close(); }
 
-bool TxthTraceFileReader::HasNext() { return trace_file_ && !trace_file_.eof(); }
+bool TXTHTraceFileReader::HasNext() { return trace_file_ && !trace_file_.eof(); }
 
-std::optional<ReadResult> TxthTraceFileReader::ReadMessage() {
+std::optional<ReadResult> TXTHTraceFileReader::ReadMessage() {
     if (!trace_file_) {
         return std::nullopt;
     }
@@ -71,7 +71,7 @@ std::optional<ReadResult> TxthTraceFileReader::ReadMessage() {
     return result;
 }
 
-std::string TxthTraceFileReader::ReadNextMessageFromFile() {
+std::string TXTHTraceFileReader::ReadNextMessageFromFile() {
     std::string message;
     std::string line;
     uint last_position = 0;

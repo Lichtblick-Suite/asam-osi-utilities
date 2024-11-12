@@ -31,7 +31,7 @@ namespace osi3 {
  * This class provides functionality to read and parse OSI messages from text format files.
  * It supports various OSI message types and handles their parsing using Google's protobuf TextFormat.
  */
-class TxthTraceFileReader final : public TraceFileReader {
+class TXTHTraceFileReader final : public TraceFileReader {
     /**
      * @brief Function type for parsing protobuf TextFormat strings into protobuf objects
      */

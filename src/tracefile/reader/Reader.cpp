@@ -6,7 +6,7 @@
 #include "osi-utilities/tracefile/Reader.h"
 
 #include "osi-utilities/tracefile/reader/NativeBinaryTraceFileReader.h"
-#include "osi-utilities/tracefile/reader/txthTraceFileReader.h"
+#include "osi-utilities/tracefile/reader/TXTHTraceFileReader.h"
 #include "osi-utilities/tracefile/reader/MCAPTraceFileReader.h"
 
 std::unique_ptr<osi3::TraceFileReader> createTraceFileReader(const std::string& format) {
@@ -17,7 +17,7 @@ std::unique_ptr<osi3::TraceFileReader> createTraceFileReader(const std::string& 
         return std::make_unique<osi3::NativeBinaryTraceFileReader>();
     }
     if (format == "txth") {
-        return std::make_unique<osi3::TxthTraceFileReader>();
+        return std::make_unique<osi3::TXTHTraceFileReader>();
     }
     throw std::invalid_argument("Unsupported format: " + format);
 }

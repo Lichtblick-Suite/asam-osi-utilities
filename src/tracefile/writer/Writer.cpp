@@ -7,7 +7,7 @@
 
 #include "osi-utilities/tracefile/writer/MCAPTraceFileWriter.h"
 #include "osi-utilities/tracefile/writer/NativeBinaryTraceFileWriter.h"
-#include "osi-utilities/tracefile/writer/txthTraceFileWriter.h"
+#include "osi-utilities/tracefile/writer/TXTHTraceFileWriter.h"
 
 // todo use enum or something else instead of a string
 // todo for the writer use mcap as default if the "string" is empty
@@ -20,7 +20,7 @@ std::unique_ptr<osi3::TraceFileWriter> CreateTraceFileWriter(const std::string& 
         return std::make_unique<osi3::NativeBinaryTraceFileWriter>();
     }
     if (format == "txth") {
-        return std::make_unique<osi3::TxthTraceFileWriter>();
+        return std::make_unique<osi3::TXTHTraceFileWriter>();
     }
     throw std::invalid_argument("Unsupported format: " + format);
 }
