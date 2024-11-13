@@ -24,6 +24,13 @@ int main(int argc, const char** argv) {
     std::cout << "Creating trace_file at " << trace_file_path << std::endl;
     trace_file_writer.Open(trace_file_path);
 
+    // add OSI-specification mandatory metadata for the entire trace file
+    std::unordered_map<std::string, std::string> metadata_entries;
+    metadata_entries["timestamp"] = trace_file_writer.GetCurrentTimeAsString();
+    metadata_entries["zero_time"] = trace_file_writer.GetCurrentTimeAsString();
+    trace_file_writer.SetMetadata("asam_osi", metadata_entries);
+
+
     // add a channel to store some data
     const std::string topic = "Sensor_1_Input";
     const std::unordered_map<std::string, std::string> channel_metadata = {{"description", "This channel contains the output of the sensor 1"}};

@@ -17,6 +17,13 @@ protected:
         writer_.Close();
         std::filesystem::remove(test_file_);
     }
+
+    void AddRequiredMetadata() {
+        std::unordered_map<std::string, std::string> metadata_entries;
+        metadata_entries["timestamp"] = writer_.GetCurrentTimeAsString();
+        metadata_entries["zero_time"] = writer_.GetCurrentTimeAsString();
+        writer_.SetMetadata("asam_osi", metadata_entries);
+    }
 };
 
 TEST_F(MCAPTraceFileWriterTest, OpenCloseFile) {
@@ -25,10 +32,9 @@ TEST_F(MCAPTraceFileWriterTest, OpenCloseFile) {
     writer_.Close();
 }
 
-
 TEST_F(MCAPTraceFileWriterTest, WriteMessage) {
     ASSERT_TRUE(writer_.Open(test_file_));
-
+    AddRequiredMetadata();
     // Create test message
     osi3::GroundTruth ground_truth;
     ground_truth.mutable_timestamp()->set_seconds(123);
@@ -40,6 +46,21 @@ TEST_F(MCAPTraceFileWriterTest, WriteMessage) {
 
     // Write message
     EXPECT_TRUE(writer_.WriteMessage(ground_truth, topic));
+}
+
+TEST_F(MCAPTraceFileWriterTest, TryWriteWithoutReqMetaData) {
+    ASSERT_TRUE(writer_.Open(test_file_));
+    // Create test message
+    osi3::GroundTruth ground_truth;
+    ground_truth.mutable_timestamp()->set_seconds(123);
+    ground_truth.mutable_timestamp()->set_nanos(456);
+
+    // Add channel for ground truth
+    const std::string topic = "/ground_truth";
+    writer_.AddChannel(topic, osi3::GroundTruth::descriptor(), {});
+
+    // Try to write message but fail
+    EXPECT_FALSE(writer_.WriteMessage(ground_truth, topic));
 }
 
 TEST_F(MCAPTraceFileWriterTest, SetMetadata) {

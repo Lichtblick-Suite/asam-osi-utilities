@@ -34,6 +34,12 @@ private:
     void CreateTestMcapFile() {
         ASSERT_TRUE(writer_.Open(test_file_));
 
+        // Add required metadata
+        std::unordered_map<std::string, std::string> metadata_entries;
+        metadata_entries["timestamp"] = writer_.GetCurrentTimeAsString();
+        metadata_entries["zero_time"] = writer_.GetCurrentTimeAsString();
+        writer_.SetMetadata("asam_osi", metadata_entries);
+
         // Add channels for different message types
         writer_.AddChannel("gt", osi3::GroundTruth::descriptor());
         writer_.AddChannel("sv", osi3::SensorView::descriptor());
