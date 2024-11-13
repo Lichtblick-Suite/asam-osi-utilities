@@ -35,15 +35,15 @@ class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
     uint16_t AddChannel(const std::string& topic, const google::protobuf::Descriptor* descriptor, std::unordered_map<std::string, std::string> channel_metadata = {});
 
     /**
-   * @brief Helper function that returns the current time as a formatted string
-   * @return Current timestamp as string in ISO 8601 format
-   *
-   * This helper function is intended to be used when creating metadata entries
-   * that require timestamps, particularly for the OSI-specification mandatory metadata.
-   * The timestamp format follows ISO 8601 standards for consistent
-   * time representation across the MCAP file.
-   */
-    std::string GetCurrentTimeAsString();
+     * @brief Helper function that returns the current time as a formatted string
+     * @return Current timestamp as string in ISO 8601 format
+     *
+     * This helper function is intended to be used when creating metadata entries
+     * that require timestamps, particularly for the OSI-specification mandatory metadata.
+     * The timestamp format follows ISO 8601 standards for consistent
+     * time representation across the MCAP file.
+     */
+    static std::string GetCurrentTimeAsString();
 
     void Close() override;
 
