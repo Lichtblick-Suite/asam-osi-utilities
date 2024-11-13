@@ -21,6 +21,18 @@ class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
    public:
     bool Open(const std::string& file_path) override;
 
+    /**
+     * @brief Opens a file for writing with additional options
+     *
+     * This alternative opening method allows specifying additional options
+     * like compression and chunk size.
+     *
+     * @param file_path Path to the file to be created/opened
+     * @param options Options for the MCAP writer
+     * @return true if successful, false otherwise
+     */
+    bool Open(const std::string& file_path, const mcap::McapWriterOptions& options);
+
     template <typename T>
     bool WriteMessage(T top_level_message, const std::string& topic = "");
     bool SetMetadata(const std::string& name, const std::unordered_map<std::string, std::string>& metadata_entries) override;
@@ -47,14 +59,14 @@ class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
 
     void Close() override;
 
-   /**
-   * @brief Gets the underlying MCAP writer instance
-   * @return Pointer to the internal McapWriter object
-   *
-   * This function can be useful for advanced operations
-   * like adding non-OSI message which requires direct access to
-   * underlying the MCAP writer.
-   */
+    /**
+     * @brief Gets the underlying MCAP writer instance
+     * @return Pointer to the internal McapWriter object
+     *
+     * This function can be useful for advanced operations
+     * like adding non-OSI message which requires direct access to
+     * underlying the MCAP writer.
+     */
     mcap::McapWriter* GetMcapWriter() { return &mcap_writer_; }
 
    private:

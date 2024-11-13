@@ -32,6 +32,33 @@ TEST_F(MCAPTraceFileWriterTest, OpenCloseFile) {
     writer_.Close();
 }
 
+TEST_F(MCAPTraceFileWriterTest, OpenWithCustomOptions) {
+    mcap::McapWriterOptions mcap_options{"protobuf"};
+    mcap_options.compression = mcap::Compression::None;
+    mcap_options.chunkSize = 1024;
+
+    EXPECT_TRUE(writer_.Open(test_file_, mcap_options));
+    AddRequiredMetadata();
+
+    // Write a test message to verify the options were applied
+    osi3::GroundTruth ground_truth;
+    ground_truth.mutable_timestamp()->set_seconds(123);
+    ground_truth.mutable_timestamp()->set_nanos(456);
+
+    // Add channel for ground truth
+    const std::string topic = "/ground_truth";
+    writer_.AddChannel(topic, osi3::GroundTruth::descriptor(), {});
+
+    EXPECT_TRUE(writer_.WriteMessage(ground_truth, topic));
+
+    writer_.Close();
+
+    // Verify file exists and has non-zero size
+    EXPECT_TRUE(std::filesystem::exists(test_file_));
+    EXPECT_GT(std::filesystem::file_size(test_file_), 0);
+}
+
+
 TEST_F(MCAPTraceFileWriterTest, WriteMessage) {
     ASSERT_TRUE(writer_.Open(test_file_));
     AddRequiredMetadata();

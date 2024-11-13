@@ -25,9 +25,14 @@ bool MCAPTraceFileReader::Open(const std::string& file_path) {
         std::cerr << "ERROR: Failed to open MCAP file: " << status.message << std::endl;
         return false;
     }
-    message_view_ = std::make_unique<mcap::LinearMessageView>(mcap_reader_.readMessages());
+    message_view_ = std::make_unique<mcap::LinearMessageView>(mcap_reader_.readMessages(OnProblem, mcap_options_));
     message_iterator_ = std::make_unique<mcap::LinearMessageView::Iterator>(message_view_->begin());
     return true;
+}
+
+bool MCAPTraceFileReader::Open(const std::string& file_path, const mcap::ReadMessageOptions& options) {
+    mcap_options_ = options;
+    return this->Open(file_path);
 }
 
 std::optional<ReadResult> MCAPTraceFileReader::ReadMessage() {
@@ -88,5 +93,7 @@ bool MCAPTraceFileReader::HasNext() {
     }
     return true;
 }
+
+void MCAPTraceFileReader::OnProblem(const mcap::Status& status) { std::cerr << "ERROR: The following MCAP problem occurred: " << status.message; }
 
 }  // namespace osi3

@@ -31,19 +31,30 @@ namespace osi3 {
 class MCAPTraceFileReader final : public TraceFileReader {
    public:
     bool Open(const std::string& file_path) override;
+
+    /**
+     * @brief Opens a trace file for reading
+     *
+     * This alternative opening method allows specifying additional options
+     * like only requesting a certain topic
+     *
+     * @param file_path Path to the file to be opened
+     * @param options Options for the MCAP writer
+     * @return true if successful, false otherwise
+     */
+    bool Open(const std::string& file_path, const mcap::ReadMessageOptions& options);
+
     std::optional<ReadResult> ReadMessage() override;
     void Close() override;
     bool HasNext() override;
 
-   /**
-    * @brief Sets whether to skip non-OSI messages during reading
-    * @param skip If true, non-OSI messages will be skipped during reading. If false, all messages will be processed
-    *
-    * If the file contains non-OSI messages and this option is not set to true, an exception will be thrown.
-    */
-   void SetSkipNonOSIMsgs(const bool skip) {
-        skip_non_osi_msgs_ = skip;
-    }
+    /**
+     * @brief Sets whether to skip non-OSI messages during reading
+     * @param skip If true, non-OSI messages will be skipped during reading. If false, all messages will be processed
+     *
+     * If the file contains non-OSI messages and this option is not set to true, an exception will be thrown.
+     */
+    void SetSkipNonOSIMsgs(const bool skip) { skip_non_osi_msgs_ = skip; }
 
    private:
     mcap::McapReader mcap_reader_;
@@ -51,6 +62,7 @@ class MCAPTraceFileReader final : public TraceFileReader {
     std::unique_ptr<mcap::LinearMessageView::Iterator> message_iterator_;
 
     bool skip_non_osi_msgs_ = false;
+    mcap::ReadMessageOptions mcap_options_;
 
     /**
      * @brief Template function to deserialize MCAP messages into specific OSI message types
@@ -88,6 +100,15 @@ class MCAPTraceFileReader final : public TraceFileReader {
         {"osi3.TrafficUpdate", {[this](const mcap::Message& msg) { return Deserialize<osi3::TrafficUpdate>(msg); }, ReaderTopLevelMessage::kTrafficUpdate}},
         {"osi3.MotionRequest", {[this](const mcap::Message& msg) { return Deserialize<osi3::MotionRequest>(msg); }, ReaderTopLevelMessage::kMotionRequest}},
         {"osi3.StreamingUpdate", {[this](const mcap::Message& msg) { return Deserialize<osi3::StreamingUpdate>(msg); }, ReaderTopLevelMessage::kStreamingUpdate}}};
+
+    /**
+     * @brief Internal callback function invoked by the MCAP reader when problems occur during reading operations
+     * @param status The MCAP status object containing error information
+     *
+     * This is an internal method called by the underlying MCAP reader implementation
+     * when it encounters issues during file reading operations.
+     */
+    static void OnProblem(const mcap::Status& status);
 };
 
 }  // namespace osi3

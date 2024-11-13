@@ -5,6 +5,8 @@
 
 #include "osi-utilities/tracefile/writer/MCAPTraceFileWriter.h"
 
+#include <google/protobuf/stubs/common.h>
+
 #include "google/protobuf/descriptor.pb.h"
 #include "osi_groundtruth.pb.h"
 #include "osi_hostvehicledata.pb.h"
@@ -16,7 +18,6 @@
 #include "osi_trafficcommandupdate.pb.h"
 #include "osi_trafficupdate.pb.h"
 #include "osi_version.pb.h"
-#include <google/protobuf/stubs/common.h>
 
 namespace {
 // helper functions from https://github.com/foxglove/mcap/blob/4ec37c5a5d0115bceaca428b1e8a0e3e5aae20cf/website/docs/guides/cpp/protobuf.md?plain=1#L198
@@ -42,10 +43,10 @@ std::string fdSet(const google::protobuf::Descriptor* descriptor) {
     return fd_set.SerializeAsString();
 }
 
-
 }  // namespace
 
 namespace osi3 {
+
 bool MCAPTraceFileWriter::Open(const std::string& file_path) {
     const auto res = mcap_writer_.open(file_path, mcap_options_);
     if (res.ok()) {
@@ -53,6 +54,11 @@ bool MCAPTraceFileWriter::Open(const std::string& file_path) {
         this->AddVersionMetadata();
     }
     return res.ok();
+}
+
+bool MCAPTraceFileWriter::Open(const std::string& file_path, const mcap::McapWriterOptions& options) {
+    mcap_options_ = options;
+    return this->Open(file_path);
 }
 
 template <typename T>
@@ -101,10 +107,8 @@ bool MCAPTraceFileWriter::SetMetadata(const std::string& name, const std::unorde
 
     // check if the provided metadata contains the required metadata by the OSI specification
     // to allow writing messages to the trace file
-    if ((metadata.name == "asam_osi") &&
-        (metadata.metadata.find("timestamp") != metadata.metadata.end()) &&
-        (metadata.metadata.find("zero_time") != metadata.metadata.end())) {
-            this->required_metadata_added_ = true;
+    if ((metadata.name == "asam_osi") && (metadata.metadata.find("timestamp") != metadata.metadata.end()) && (metadata.metadata.find("zero_time") != metadata.metadata.end())) {
+        this->required_metadata_added_ = true;
     }
 
     // add metadata to file
@@ -159,7 +163,8 @@ uint16_t MCAPTraceFileWriter::AddChannel(const std::string& topic, const google:
 
     // add osi version to channel metadata as required by spec.
     const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
-    channel_metadata["osi_version"] = std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
+    channel_metadata["osi_version"] =
+        std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
     channel_metadata["protobuf_version"] = google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
 
     // add the channel to the writer/mcap file
@@ -172,12 +177,11 @@ uint16_t MCAPTraceFileWriter::AddChannel(const std::string& topic, const google:
     return channel.id;
 }
 
-
 std::string MCAPTraceFileWriter::GetCurrentTimeAsString() {
     const auto now = std::chrono::system_clock::now();
     const auto now_in_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
     const auto timer = std::chrono::system_clock::to_time_t(now);
-    const std::tm utc_time_structure = *std::gmtime(&timer); // Greenwich Mean Time (GMT) is in Coordinated Universal Time (UTC) zone
+    const std::tm utc_time_structure = *std::gmtime(&timer);  // Greenwich Mean Time (GMT) is in Coordinated Universal Time (UTC) zone
     std::ostringstream oss;
     oss << std::put_time(&utc_time_structure, "%Y%m%dT%H%M%S");
     oss << '.' << std::setfill('0') << std::setw(1) << (now_in_ms.count() / 100);

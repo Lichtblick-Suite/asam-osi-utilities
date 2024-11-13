@@ -3,34 +3,34 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#include <gtest/gtest.h>
 #include "osi-utilities/tracefile/reader/MCAPTraceFileReader.h"
+
+#include <gtest/gtest.h>
+
+#include <filesystem>
+
 #include "osi-utilities/tracefile/writer/MCAPTraceFileWriter.h"
 #include "osi_groundtruth.pb.h"
 #include "osi_sensorview.pb.h"
-
-#include <filesystem>
 
 static const char* JSON_SCHEMA_TEXT = R"({
   "test_field1": "abc",
 })";
 
 class McapTraceFileReaderTest : public ::testing::Test {
-protected:
+   protected:
     osi3::MCAPTraceFileReader reader_;
     osi3::MCAPTraceFileWriter writer_;
     const std::string test_file_ = "test.mcap";
 
-    void SetUp() override {
-        CreateTestMcapFile();
-    }
+    void SetUp() override { CreateTestMcapFile(); }
 
     void TearDown() override {
         reader_.Close();
         std::filesystem::remove(test_file_);
     }
 
-private:
+   private:
     void CreateTestMcapFile() {
         ASSERT_TRUE(writer_.Open(test_file_));
 
@@ -59,7 +59,7 @@ private:
         // Add non-OSI JSON channel and message
         auto* mcap_writer = writer_.GetMcapWriter();
 
-        auto json_schema =mcap::Schema("my_json_schema", "jsonschema", JSON_SCHEMA_TEXT);
+        auto json_schema = mcap::Schema("my_json_schema", "jsonschema", JSON_SCHEMA_TEXT);
         mcap_writer->addSchema(json_schema);
 
         mcap::Channel channel("json_topic", "json", json_schema.id);
@@ -79,12 +79,19 @@ private:
     }
 };
 
-TEST_F(McapTraceFileReaderTest, OpenValidFile) {
-    EXPECT_TRUE(reader_.Open(test_file_));
-}
+TEST_F(McapTraceFileReaderTest, OpenValidFile) { EXPECT_TRUE(reader_.Open(test_file_)); }
 
-TEST_F(McapTraceFileReaderTest, OpenNonexistentFile) {
-    EXPECT_FALSE(reader_.Open("nonexistent.mcap"));
+TEST_F(McapTraceFileReaderTest, OpenNonexistentFile) { EXPECT_FALSE(reader_.Open("nonexistent.mcap")); }
+
+TEST_F(McapTraceFileReaderTest, OpenWithReaderOptions) {
+    mcap::ReadMessageOptions options;
+    options.startTime = 1000000;
+    options.endTime = options.startTime + 1;
+    ASSERT_TRUE(reader_.Open(test_file_, options));
+
+    // Verify behavior with the configured options
+    // that no messages should be returned
+    EXPECT_FALSE(reader_.HasNext());
 }
 
 TEST_F(McapTraceFileReaderTest, ReadGroundTruthMessage) {
@@ -132,8 +139,6 @@ TEST_F(McapTraceFileReaderTest, PreventMultipleFileOpens) {
     EXPECT_TRUE(reader_.Open(test_file_));
 }
 
-
-
 TEST_F(McapTraceFileReaderTest, HasNextReturnsFalseWhenEmpty) {
     ASSERT_TRUE(reader_.Open(test_file_));
     reader_.SetSkipNonOSIMsgs(true);
@@ -158,9 +163,7 @@ TEST_F(McapTraceFileReaderTest, ReadMessageReturnsNulloptWhenEmpty) {
     EXPECT_FALSE(result.has_value());
 }
 
-TEST_F(McapTraceFileReaderTest, HasNextReturnsFalseWhenNotOpened) {
-    EXPECT_FALSE(reader_.HasNext());
-}
+TEST_F(McapTraceFileReaderTest, HasNextReturnsFalseWhenNotOpened) { EXPECT_FALSE(reader_.HasNext()); }
 
 TEST_F(McapTraceFileReaderTest, ReadInvalidMessageFormat) {
     const std::string invalid_file = "invalid.mcap";
@@ -179,7 +182,6 @@ TEST_F(McapTraceFileReaderTest, CloseAndReopenFile) {
     EXPECT_TRUE(reader_.Open(test_file_));
     EXPECT_TRUE(reader_.HasNext());
 }
-
 
 TEST_F(McapTraceFileReaderTest, SkipNonOSIMessagesWhenEnabled) {
     ASSERT_TRUE(reader_.Open(test_file_));
@@ -213,7 +215,5 @@ TEST_F(McapTraceFileReaderTest, ThrowExceptionForNonOSIMessagesWhenSkipDisabled)
     ASSERT_TRUE(result2.has_value());
 
     // Third message (JSON) should throw an exception
-    EXPECT_THROW({
-        reader_.ReadMessage();
-    }, std::runtime_error);
+    EXPECT_THROW({ reader_.ReadMessage(); }, std::runtime_error);
 }
