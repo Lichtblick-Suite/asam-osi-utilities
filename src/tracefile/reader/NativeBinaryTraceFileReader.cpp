@@ -57,12 +57,15 @@ bool NativeBinaryTraceFileReader::Open(const std::string& file_path) {
 
 void NativeBinaryTraceFileReader::Close() { trace_file_.close(); }
 
-bool NativeBinaryTraceFileReader::HasNext() { return (trace_file_ && trace_file_.peek() != EOF); }
+bool NativeBinaryTraceFileReader::HasNext() { return (trace_file_ && trace_file_.is_open() && trace_file_.peek() != EOF); }
 
 std::optional<ReadResult> NativeBinaryTraceFileReader::ReadMessage() {
-    if ((!trace_file_) || !trace_file_.is_open()) {
+    // check if ready and if there are messages left
+    if (!this->HasNext()) {
+        std::cerr << "Unable to read message: No more messages available in trace file or file not opened." << std::endl;
         return std::nullopt;
     }
+
     const auto serialized_msg = ReadNextMessageFromFile();
 
     if (serialized_msg.empty()) {

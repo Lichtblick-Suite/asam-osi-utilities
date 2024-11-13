@@ -34,15 +34,15 @@ enum class ReaderTopLevelMessage : u_int8_t {
  * @brief Map of trace file names to their corresponding message type
  */
 const std::unordered_map<std::string, osi3::ReaderTopLevelMessage> kFileNameMessageTypeMap = {{"_gt_", osi3::ReaderTopLevelMessage::kGroundTruth},
-                                                                                      {"_sd_", osi3::ReaderTopLevelMessage::kSensorData},
-                                                                                      {"_sv_", osi3::ReaderTopLevelMessage::kSensorView},
-                                                                                      {"_svc_", osi3::ReaderTopLevelMessage::kSensorViewConfiguration},
-                                                                                      {"_hvd_", osi3::ReaderTopLevelMessage::kHostVehicleData},
-                                                                                      {"_tc_", osi3::ReaderTopLevelMessage::kTrafficCommand},
-                                                                                      {"_tcu_", osi3::ReaderTopLevelMessage::kTrafficCommandUpdate},
-                                                                                      {"_tu_", osi3::ReaderTopLevelMessage::kTrafficUpdate},
-                                                                                      {"_mr_", osi3::ReaderTopLevelMessage::kMotionRequest},
-                                                                                      {"_su_", osi3::ReaderTopLevelMessage::kStreamingUpdate}};
+                                                                                              {"_sd_", osi3::ReaderTopLevelMessage::kSensorData},
+                                                                                              {"_sv_", osi3::ReaderTopLevelMessage::kSensorView},
+                                                                                              {"_svc_", osi3::ReaderTopLevelMessage::kSensorViewConfiguration},
+                                                                                              {"_hvd_", osi3::ReaderTopLevelMessage::kHostVehicleData},
+                                                                                              {"_tc_", osi3::ReaderTopLevelMessage::kTrafficCommand},
+                                                                                              {"_tcu_", osi3::ReaderTopLevelMessage::kTrafficCommandUpdate},
+                                                                                              {"_tu_", osi3::ReaderTopLevelMessage::kTrafficUpdate},
+                                                                                              {"_mr_", osi3::ReaderTopLevelMessage::kMotionRequest},
+                                                                                              {"_su_", osi3::ReaderTopLevelMessage::kStreamingUpdate}};
 
 /**
  * @brief Structure containing the result of a read operation
@@ -50,7 +50,7 @@ const std::unordered_map<std::string, osi3::ReaderTopLevelMessage> kFileNameMess
 struct ReadResult {
     std::unique_ptr<google::protobuf::Message> message;                   /**< The parsed protobuf message */
     ReaderTopLevelMessage message_type = ReaderTopLevelMessage::kUnknown; /**< Type of the message */
-    std::string channel_name;                                                  /**< Channel name (only for MCAP format) */
+    std::string channel_name;                                             /**< Channel name (only for MCAP format) */
 };
 
 /**
@@ -95,7 +95,12 @@ class TraceFileReader {
     virtual void Close() = 0;
 
     /**
-     * @brief Checks if more messages are available, should be used before calling ReadMessage()
+     * @brief Indicates availability of additional messages
+     *
+     * Returns whether more messages can be read from the trace file. Always call this method
+     * before ReadMessage() to verify message availability. For MCAP format files specifically,
+     * this may return true even when only non-OSI messages remain in the file.
+     *
      * @return true if there are more messages to read, false otherwise
      */
     virtual bool HasNext() = 0;
@@ -104,7 +109,7 @@ class TraceFileReader {
 // TODO change to function which guesses on the filename endings
 /**
  * @brief Factory function to create trace file readers based on the input file format
- * @param  The format of the input file (e.g., "mcap")
+ * @param format The format of the input file (e.g., "mcap")
  * @return Unique pointer to a TraceFileReader implementation
  */
 std::unique_ptr<TraceFileReader> createTraceFileReader(const std::string& format);

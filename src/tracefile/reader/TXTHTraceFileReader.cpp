@@ -53,10 +53,12 @@ bool TXTHTraceFileReader::Open(const std::string& filename, const ReaderTopLevel
 
 void TXTHTraceFileReader::Close() { trace_file_.close(); }
 
-bool TXTHTraceFileReader::HasNext() { return trace_file_ && !trace_file_.eof(); }
+bool TXTHTraceFileReader::HasNext() { return (trace_file_ && trace_file_.is_open() && trace_file_.peek() != EOF); }
 
 std::optional<ReadResult> TXTHTraceFileReader::ReadMessage() {
-    if (!trace_file_) {
+    // check if ready and if there are messages left
+    if (!this->HasNext()) {
+        std::cerr << "Unable to read message: No more messages available in trace file or file not opened." << std::endl;
         return std::nullopt;
     }
 

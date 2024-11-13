@@ -27,6 +27,7 @@ bool MCAPTraceFileReader::Open(const std::string& file_path) {
 std::optional<ReadResult> MCAPTraceFileReader::ReadMessage() {
     // check if ready and if there are messages left
     if (!this->HasNext()) {
+        std::cerr << "Unable to read message: No more messages available in trace file or file not opened." << std::endl;
         return std::nullopt;
     }
 
@@ -34,9 +35,6 @@ std::optional<ReadResult> MCAPTraceFileReader::ReadMessage() {
     const auto msg = msg_view.message;
     const auto channel = msg_view.channel;
     const auto schema = msg_view.schema;
-
-    // mcap can contain more than protobuf messages and also non-osi messages
-    // todo check if it makes more sense to use mcap ReadMessageOptions
 
     // this function only supports osi3 protobuf messages
     if (schema->encoding != "protobuf" || schema->name.substr(0, 5) != "osi3.") {
