@@ -120,6 +120,20 @@ TEST_F(McapTraceFileReaderTest, ReadSensorViewMessage) {
     EXPECT_EQ(result->channel_name, "sv");
 }
 
+TEST_F(McapTraceFileReaderTest, PreventMultipleFileOpens) {
+    // First open should succeed
+    EXPECT_TRUE(reader_.Open(test_file_));
+
+    // Second open should fail while first file is still open
+    EXPECT_FALSE(reader_.Open("testdata/another.mcap"));
+
+    // After closing, opening a new file should work
+    reader_.Close();
+    EXPECT_TRUE(reader_.Open(test_file_));
+}
+
+
+
 TEST_F(McapTraceFileReaderTest, HasNextReturnsFalseWhenEmpty) {
     ASSERT_TRUE(reader_.Open(test_file_));
     reader_.SetSkipNonOSIMsgs(true);

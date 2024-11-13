@@ -105,6 +105,19 @@ TEST_F(TxthTraceFileReaderTest, ReadSensorViewMessage) {
     EXPECT_EQ(sv->timestamp().nanos(), 101);
 }
 
+TEST_F(TxthTraceFileReaderTest, PreventMultipleFileOpens) {
+    // First open should succeed
+    EXPECT_TRUE(reader_.Open(test_file_gt_));
+
+    // Second open should fail while first file is still open
+    EXPECT_FALSE(reader_.Open("testdata/another.txth"));
+
+    // After closing, opening a new file should work
+    reader_.Close();
+    EXPECT_TRUE(reader_.Open(test_file_gt_));
+}
+
+
 TEST_F(TxthTraceFileReaderTest, HasNextReturnsFalseWhenEmpty) {
     ASSERT_TRUE(reader_.Open(test_file_gt_));
     ASSERT_TRUE(reader_.HasNext());

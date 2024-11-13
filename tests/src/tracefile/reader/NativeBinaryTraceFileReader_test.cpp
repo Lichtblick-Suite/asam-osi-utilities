@@ -92,6 +92,19 @@ TEST_F(NativeBinaryTraceFileReaderTest, ReadSensorViewMessage) {
     EXPECT_EQ(sv->timestamp().nanos(), 101);
 }
 
+TEST_F(NativeBinaryTraceFileReaderTest, PreventMultipleFileOpens) {
+    // First open should succeed
+    EXPECT_TRUE(reader_.Open(test_file_gt_));
+
+    // Second open should fail while first file is still open
+    EXPECT_FALSE(reader_.Open("testdata/another.osi"));
+
+    // After closing, opening a new file should work
+    reader_.Close();
+    EXPECT_TRUE(reader_.Open(test_file_gt_));
+}
+
+
 TEST_F(NativeBinaryTraceFileReaderTest, HasNextReturnsFalseWhenEmpty) {
     ASSERT_TRUE(reader_.Open(test_file_gt_));
     ASSERT_TRUE(reader_.HasNext());
@@ -124,6 +137,7 @@ TEST_F(NativeBinaryTraceFileReaderTest, OpenInvalidFileFormat) {
 
 TEST_F(NativeBinaryTraceFileReaderTest, OpenWithExplicitMessageType) {
     EXPECT_TRUE(reader_.Open(test_file_gt_, osi3::ReaderTopLevelMessage::kGroundTruth));
+    reader_.Close();
     EXPECT_TRUE(reader_.Open(test_file_sv_, osi3::ReaderTopLevelMessage::kSensorView));
 }
 

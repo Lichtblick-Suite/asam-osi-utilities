@@ -16,6 +16,11 @@ bool NativeBinaryTraceFileReader::Open(const std::string& filename, const Reader
 }
 
 bool NativeBinaryTraceFileReader::Open(const std::string& file_path) {
+    // prevent opening again if already opened
+    if (trace_file_.is_open()) {
+        std::cerr << "ERROR: Opening file " << file_path << ", reader has already a file opened" << std::endl;
+        return false;
+    }
     // check if at least .osi ending is present
     if (file_path.find(".osi") == std::string::npos) {
         std::cerr << "ERROR: The trace file '" << file_path << "' must have a '.osi' extension." << std::endl;
