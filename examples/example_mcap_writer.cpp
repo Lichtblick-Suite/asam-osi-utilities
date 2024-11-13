@@ -11,7 +11,7 @@
 #include "osi_version.pb.h"
 
 std::string GenerateTempFilePath() {
-    const auto path = std::filesystem::temp_directory_path() / "sv_example.mcap";
+    const auto path = std::filesystem::temp_directory_path() / "sv_example.mcap";  // add sv to indicate sensor view as required by the OSI-specification
     return path.string();
 }
 
@@ -26,10 +26,9 @@ int main(int argc, const char** argv) {
 
     // add OSI-specification mandatory metadata for the entire trace file
     std::unordered_map<std::string, std::string> metadata_entries;
-    metadata_entries["timestamp"] = trace_file_writer.GetCurrentTimeAsString();
-    metadata_entries["zero_time"] = trace_file_writer.GetCurrentTimeAsString();
+    metadata_entries["timestamp"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString();
+    metadata_entries["zero_time"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString();
     trace_file_writer.SetMetadata("asam_osi", metadata_entries);
-
 
     // add a channel to store some data
     const std::string topic = "Sensor_1_Input";
@@ -59,7 +58,7 @@ int main(int argc, const char** argv) {
     for (int i = 0; i < 10; ++i) {
         // manipulate the data so not every message is the same
         auto timestamp = sensor_view_1.timestamp().seconds() * 1000000000 + sensor_view_1.timestamp().nanos();
-        timestamp += kTimeStepSizeS*1000000000;
+        timestamp += kTimeStepSizeS * 1000000000;
         sensor_view_1.mutable_timestamp()->set_nanos(timestamp % 1000000000);
         sensor_view_1.mutable_timestamp()->set_seconds(timestamp / 1000000000);
         ground_truth_1->mutable_timestamp()->set_nanos(timestamp % 1000000000);
