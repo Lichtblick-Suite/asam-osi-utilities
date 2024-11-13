@@ -9,8 +9,25 @@
 #include "osi_sensordata.pb.h"
 #include "osi_version.pb.h"
 
+std::string GetCurrentTimeAsString() {
+    const auto now = std::chrono::system_clock::now();
+    const auto now_in_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+    const auto timer = std::chrono::system_clock::to_time_t(now);
+    const std::tm utc_time_structure = *std::gmtime(&timer); // Greenwich Mean Time (GMT) is in Coordinated Universal Time (UTC) zone
+    std::ostringstream oss;
+    oss << std::put_time(&utc_time_structure, "%Y%m%dT%H%M%S");
+    oss << "Z";  // As GMT is used as a reference time zone, add Z to indicate UTC (+00:00)
+    return oss.str();
+}
+
 std::string GenerateTempFilePath() {
-    const auto path = std::filesystem::temp_directory_path() / "example_txth_writer.txth";
+    std::string file_name = GetCurrentTimeAsString();
+    const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
+    file_name += "_" + std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
+    file_name += "_" + google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
+    file_name += "_10"; // 10 frames
+    file_name += "_example-txth-writer.txth";
+    const auto path = std::filesystem::temp_directory_path() / file_name;
     return path.string();
 }
 
@@ -46,7 +63,7 @@ int main(int argc, const char** argv) {
     for (int i = 0; i < 10; ++i) {
         // manipulate the data so not every message is the same
         auto timestamp = sensor_view.timestamp().seconds() * 1000000000 + sensor_view.timestamp().nanos();
-        timestamp += 100000000;
+        timestamp += kTimeStepSizeS*1000000000;
         sensor_view.mutable_timestamp()->set_nanos(timestamp % 1000000000);
         sensor_view.mutable_timestamp()->set_seconds(timestamp / 1000000000);
         ground_truth->mutable_timestamp()->set_nanos(timestamp % 1000000000);

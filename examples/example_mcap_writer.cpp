@@ -11,7 +11,7 @@
 #include "osi_version.pb.h"
 
 std::string GenerateTempFilePath() {
-    const auto path = std::filesystem::temp_directory_path() / "example_mcap.mcap";
+    const auto path = std::filesystem::temp_directory_path() / "sv_example.mcap";
     return path.string();
 }
 
@@ -33,7 +33,7 @@ int main(int argc, const char** argv) {
 
     // add a channel to store some data
     const std::string topic = "Sensor_1_Input";
-    const std::unordered_map<std::string, std::string> channel_metadata = {{"description", "This channel contains the output of the sensor 1"}};
+    const std::unordered_map<std::string, std::string> channel_metadata = {{"description", "This channel contains the input data (SensorView) for sensor 1"}};
     trace_file_writer.AddChannel(topic, osi3::SensorView::descriptor(), channel_metadata);
 
     // create OSI data to store
@@ -59,7 +59,7 @@ int main(int argc, const char** argv) {
     for (int i = 0; i < 10; ++i) {
         // manipulate the data so not every message is the same
         auto timestamp = sensor_view_1.timestamp().seconds() * 1000000000 + sensor_view_1.timestamp().nanos();
-        timestamp += 100000000;
+        timestamp += kTimeStepSizeS*1000000000;
         sensor_view_1.mutable_timestamp()->set_nanos(timestamp % 1000000000);
         sensor_view_1.mutable_timestamp()->set_seconds(timestamp / 1000000000);
         ground_truth_1->mutable_timestamp()->set_nanos(timestamp % 1000000000);
