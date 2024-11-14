@@ -18,7 +18,7 @@ namespace osi3 {
  * @brief Abstract base class for writing trace files in various formats
  *
  * This class provides an interface for writing protobuf messages to trace files.
- * Different implementations can support various file formats like MCAP.
+ * Different implementations can support various file formats like .osi, .mcap or .txth.
  *
  * @Note The WriteMessage() function is intentionally omitted from this base class since it is format-specific.
  * Users should dynamically cast to the concrete implementation class to access the appropriate WriteMessage() function.
