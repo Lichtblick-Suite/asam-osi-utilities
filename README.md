@@ -2,12 +2,14 @@
 
 ![Build](https://github.com/OpenSimulationInterface/osi-utilities/actions/workflows/ubuntu.yml/badge.svg)
 
-Utility library providing companion tools, helpers and best practices for working with the [ASAM Open Simulation Interface (OSI)](https://opensimulationinterface.github.io/osi-antora-generator/asamosi/latest/specification/index.html) standard.
+A utility library that provides essential tools, helper functions, and implementation best practices for working with the [ASAM Open Simulation Interface (OSI)](https://opensimulationinterface.github.io/osi-antora-generator/asamosi/latest/specification/index.html) standard. This library streamlines OSI data handling and makes integration into applications and simulations easier.
+
+> **_NOTE:_**   The main branch actively tracks and implements the latest OSI specification developments, including promising proposed changes. This project does not feature a stable release targeting a specific OSI version yet!
 
 ## Features
 - Cross-platform C++ library and Python APIs
-  - **Note:** Python API is planned but not yet implemented
-  - **Note:** Windows support is planned but not yet tested, contributions welcome!
+  - > **_NOTE:_**  Python API is planned but not yet implemented.
+  - > **_NOTE:_**  Windows should be supported but not yet tested, contributions welcome!
 - Easily integrate dealing with OSI data and trace files into your own projects
 - More OSI utility features planned, feature requests and pull requests welcome!
 
@@ -50,7 +52,7 @@ cmake --build . -j4
 
 ## Examples
 
-Check out the examples in the [examples](examples) folder.
+Check out the examples in the [examples](examples) folder for usage examples.
 Further information can be found in the [examples/README.md](examples/README.md).
 
 ## Contributing
