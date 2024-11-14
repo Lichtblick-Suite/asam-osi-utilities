@@ -82,7 +82,7 @@ class TraceFileReader {
      * @param file_path Path to the file to be opened
      * @return true if successful, false otherwise
      */
-    virtual bool Open(const std::string& file_path) = 0;
+    virtual bool Open(const std::filesystem::path& file_path) = 0;
 
     /**
      * @brief Reads the next message from the trace file
@@ -114,7 +114,7 @@ class TraceFileFactory {
    public:
     /**
      * @brief Creates a reader instance based on the file extension
-     * @param path Path to the trace file
+     * @param file_path Path to the trace file
      * @return Unique pointer to a TraceFileReader instance
      * @throws std::invalid_argument if the file extension is not supported
      *
@@ -125,7 +125,7 @@ class TraceFileFactory {
      *
      * @note It is still required to call Open(path) on the returned reader instance
      */
-    static std::unique_ptr<TraceFileReader> createReader(const std::filesystem::path& path);
+    static std::unique_ptr<TraceFileReader> createReader(const std::filesystem::path& file_path);
 };
 
 }  // namespace osi3

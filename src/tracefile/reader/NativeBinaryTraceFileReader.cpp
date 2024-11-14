@@ -9,25 +9,26 @@
 
 namespace osi3 {
 
-bool NativeBinaryTraceFileReader::Open(const std::string& filename, const ReaderTopLevelMessage message_type) {
+bool NativeBinaryTraceFileReader::Open(const std::filesystem::path& file_path, const ReaderTopLevelMessage message_type) {
     message_type_ = message_type;
-    return this->Open(filename);
+    return this->Open(file_path);
 }
 
-bool NativeBinaryTraceFileReader::Open(const std::string& file_path) {
+bool NativeBinaryTraceFileReader::Open(const std::filesystem::path& file_path) {
     // prevent opening again if already opened
     if (trace_file_.is_open()) {
         std::cerr << "ERROR: Opening file " << file_path << ", reader has already a file opened" << std::endl;
         return false;
     }
+
     // check if at least .osi ending is present
-    if (file_path.find(".osi") == std::string::npos) {
+    if (file_path.extension().string() != ".osi") {
         std::cerr << "ERROR: The trace file '" << file_path << "' must have a '.osi' extension." << std::endl;
         return false;
     }
 
     // check if file exists
-    if (!std::filesystem::exists(file_path)) {
+    if (!exists(file_path)) {
         std::cerr << "ERROR: The trace file '" << file_path << "' does not exist." << std::endl;
         return false;
     }
@@ -35,7 +36,7 @@ bool NativeBinaryTraceFileReader::Open(const std::string& file_path) {
     // Determine message type based on filename if not specified in advance
     if (message_type_ == ReaderTopLevelMessage::kUnknown) {
         for (const auto& [key, value] : kFileNameMessageTypeMap) {
-            if (file_path.find(key) != std::string::npos) {
+            if (file_path.filename().string().find(key) != std::string::npos) {
                 message_type_ = value;
                 break;
             }

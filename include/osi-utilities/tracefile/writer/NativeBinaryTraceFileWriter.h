@@ -20,7 +20,7 @@ namespace osi3 {
  */
 class NativeBinaryTraceFileWriter final : public TraceFileWriter {
    public:
-    bool Open(const std::string& file_path) override;
+    bool Open(const std::filesystem::path& file_path) override;
     void Close() override;
 
     /**

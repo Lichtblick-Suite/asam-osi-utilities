@@ -9,19 +9,27 @@
 
 namespace osi3 {
 
-bool MCAPTraceFileReader::Open(const std::string& file_path) {
+bool MCAPTraceFileReader::Open(const std::filesystem::path& file_path) {
     // prevent opening again if already opened
     if (message_view_ != nullptr) {
         std::cerr << "ERROR: Opening file " << file_path << ", reader has already a file opened" << std::endl;
         return false;
     }
 
-    if (!std::filesystem::exists(file_path)) {
+    // check if file exists
+    if (!exists(file_path)) {
         std::cerr << "ERROR: The trace file '" << file_path << "' does not exist." << std::endl;
         return false;
     }
 
-    if (const auto status = mcap_reader_.open(file_path); !status.ok()) {
+    // open but instead of mcap::McapReader::open(std::string_view filename) use internal ifstream to support
+    // even the strangest paths with std::filesystem::path
+    trace_file_ = std::ifstream(file_path, std::ios::binary);
+    if (!trace_file_) {
+        std::cerr << "ERROR: Failed to open file stream: " << file_path << std::endl;
+        return false;
+    }
+    if (const auto status = mcap_reader_.open(trace_file_); !status.ok()) {
         std::cerr << "ERROR: Failed to open MCAP file: " << status.message << std::endl;
         return false;
     }
@@ -80,10 +88,14 @@ void MCAPTraceFileReader::Close() {
     message_iterator_.reset();
     message_view_.reset();
     mcap_reader_.close();
+    trace_file_.close();
 }
 
 bool MCAPTraceFileReader::HasNext() {
     // not opened yet
+    if (!(trace_file_ && trace_file_.is_open())) {
+        return false;
+    }
     if (!message_iterator_) {
         return false;
     }

@@ -20,7 +20,7 @@ namespace osi3 {
  */
 class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
    public:
-    bool Open(const std::string& file_path) override;
+    bool Open(const std::filesystem::path& file_path) override;
 
     /**
      * @brief Opens a file for writing with additional options
@@ -32,7 +32,7 @@ class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
      * @param options Options for the MCAP writer
      * @return true if successful, false otherwise
      */
-    bool Open(const std::string& file_path, const mcap::McapWriterOptions& options);
+    bool Open(const std::filesystem::path& file_path, const mcap::McapWriterOptions& options);
 
     /**
      * @brief Writes a protobuf message to the file
@@ -85,9 +85,9 @@ class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
     mcap::McapWriter* GetMcapWriter() { return &mcap_writer_; }
 
    private:
+    std::ofstream trace_file_;                            /**< Trace file stream */
     mcap::McapWriter mcap_writer_;                        /**< MCAP writer instance */
     mcap::McapWriterOptions mcap_options_{"protobuf"};    /**< MCAP writer configuration */
-    bool file_open_ = false;                              /**< File open state */
     std::vector<mcap::Schema> schemas_;                   /**< Registrated schemas */
     std::map<std::string, uint16_t> topic_to_channel_id_; /**< Topic to channel ID mapping */
     bool required_metadata_added_ = false;                /**< Flag to track if required metadata has been added */

@@ -47,16 +47,24 @@ std::string fdSet(const google::protobuf::Descriptor* descriptor) {
 
 namespace osi3 {
 
-bool MCAPTraceFileWriter::Open(const std::string& file_path) {
-    const auto res = mcap_writer_.open(file_path, mcap_options_);
-    if (res.ok()) {
-        file_open_ = true;
-        this->AddVersionMetadata();
+bool MCAPTraceFileWriter::Open(const std::filesystem::path& file_path) {
+    // prevent opening again if already opened
+    if (trace_file_.is_open()) {
+        std::cerr << "ERROR: Opening file " << file_path << ", writer has already a file opened" << std::endl;
+        return false;
     }
-    return res.ok();
+
+    trace_file_.open(file_path, std::ios::binary);
+    if (!trace_file_) {
+        std::cerr << "ERROR: Opening file " << file_path << std::endl;
+        return false;
+    }
+    mcap_writer_.open(trace_file_, mcap_options_);
+    this->AddVersionMetadata();
+    return true;
 }
 
-bool MCAPTraceFileWriter::Open(const std::string& file_path, const mcap::McapWriterOptions& options) {
+bool MCAPTraceFileWriter::Open(const std::filesystem::path& file_path, const mcap::McapWriterOptions& options) {
     mcap_options_ = options;
     return this->Open(file_path);
 }
@@ -64,22 +72,22 @@ bool MCAPTraceFileWriter::Open(const std::string& file_path, const mcap::McapWri
 template <typename T>
 bool MCAPTraceFileWriter::WriteMessage(T top_level_message, const std::string& topic) {
     if (topic.empty()) {
-        std::cerr << "MCAPTraceFileWriter: cannot write message, topic is empty\n";
+        std::cerr << "ERROR: cannot write message, topic is empty\n";
         return false;
     }
-    if (!file_open_) {
-        std::cerr << "MCAPTraceFileWriter: cannot write message, file is not open\n";
+    if (!(trace_file_ && trace_file_.is_open())) {
+        std::cerr << "ERROR: cannot write message, file is not open\n";
         return false;
     }
     if (!required_metadata_added_) {
-        std::cerr << "MCAPTraceFileWriter: cannot write message, required metadata (according to the OSI specification) was not set in advance\n";
+        std::cerr << "ERROR: cannot write message, required metadata (according to the OSI specification) was not set in advance\n";
         return false;
     }
 
     // get channel id from topic using topic_to_channel_id_
     const auto topic_channel_id = topic_to_channel_id_.find(topic);
     if (topic_channel_id == topic_to_channel_id_.end()) {
-        std::cerr << "MCAPTraceFileWriter: cannot write message, topic " << topic << " not found\n";
+        std::cerr << "ERROR: cannot write message, topic " << topic << " not found\n";
         return false;
     }
 
@@ -93,7 +101,7 @@ bool MCAPTraceFileWriter::WriteMessage(T top_level_message, const std::string& t
     msg.data = reinterpret_cast<const std::byte*>(data.data());
     msg.dataSize = data.size();
     if (const auto status = mcap_writer_.write(msg); status.code != mcap::StatusCode::Success) {
-        std::cerr << "Error: Failed to write message " << status.message;
+        std::cerr << "ERROR: Failed to write message " << status.message;
         return false;
     }
     return true;
@@ -112,15 +120,15 @@ bool MCAPTraceFileWriter::SetMetadata(const std::string& name, const std::unorde
 
     // add metadata to file
     if (const auto status = mcap_writer_.write(metadata); status.code != mcap::StatusCode::Success) {
-        std::cerr << "Error: Failed to write metadata with name " << name << "\n" << status.message;
+        std::cerr << "ERROR: Failed to write metadata with name " << name << "\n" << status.message;
         return false;
     }
     return true;
 }
 
 void MCAPTraceFileWriter::Close() {
-    file_open_ = false;
     mcap_writer_.close();
+    trace_file_.close();
 }
 
 void MCAPTraceFileWriter::AddVersionMetadata() {
@@ -130,7 +138,7 @@ void MCAPTraceFileWriter::AddVersionMetadata() {
         std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
 
     if (const auto status = mcap_writer_.write(metadata_versions); status.code != mcap::StatusCode::Success) {
-        throw std::runtime_error("Error: Failed to write metadata versions. " + status.message);
+        throw std::runtime_error("ERROR: Failed to write metadata versions. " + status.message);
     }
 }
 

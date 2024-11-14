@@ -45,7 +45,7 @@ class TraceFileWriter {
      * @param file_path Path to the file to be created/opened
      * @return true if successful, false otherwise
      */
-    virtual bool Open(const std::string& file_path) = 0;
+    virtual bool Open(const std::filesystem::path& file_path) = 0;
 
     /**
      * @brief Closes the trace file

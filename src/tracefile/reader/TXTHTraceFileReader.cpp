@@ -9,25 +9,29 @@
 
 namespace osi3 {
 
-bool TXTHTraceFileReader::Open(const std::string& file_path) {
+bool TXTHTraceFileReader::Open(const std::filesystem::path& file_path) {
     // prevent opening again if already opened
     if (trace_file_.is_open()) {
         std::cerr << "ERROR: Opening file " << file_path << ", reader has already a file opened" << std::endl;
         return false;
     }
-    if (file_path.find(".txth") == std::string::npos) {
+
+    // check if at least .txth ending is present
+    if (file_path.extension().string() != ".txth") {
         std::cerr << "ERROR: The trace file '" << file_path << "' must have a '.txth' extension." << std::endl;
         return false;
     }
 
-    if (!std::filesystem::exists(file_path)) {
+    // check if file exists
+    if (!exists(file_path)) {
         std::cerr << "ERROR: The trace file '" << file_path << "' does not exist." << std::endl;
         return false;
     }
 
+    // Determine message type based on filename if not specified in advance
     if (message_type_ == ReaderTopLevelMessage::kUnknown) {
         for (const auto& [key, value] : kFileNameMessageTypeMap) {
-            if (file_path.find(key) != std::string::npos) {
+            if (file_path.filename().string().find(key) != std::string::npos) {
                 message_type_ = value;
                 break;
             }
@@ -51,9 +55,9 @@ bool TXTHTraceFileReader::Open(const std::string& file_path) {
     return trace_file_.is_open();
 }
 
-bool TXTHTraceFileReader::Open(const std::string& filename, const ReaderTopLevelMessage message_type) {
+bool TXTHTraceFileReader::Open(const std::filesystem::path& file_path, const ReaderTopLevelMessage message_type) {
     message_type_ = message_type;
-    return Open(filename);
+    return Open(file_path);
 }
 
 void TXTHTraceFileReader::Close() { trace_file_.close(); }

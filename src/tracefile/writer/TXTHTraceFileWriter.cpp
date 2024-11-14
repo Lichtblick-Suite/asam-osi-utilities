@@ -19,30 +19,34 @@
 
 namespace osi3 {
 
-bool TXTHTraceFileWriter::Open(const std::string& file_path) {
-    if (file_path.substr(file_path.length() - 5) != ".txth") {
-        std::cerr << "Error: Filename must end with .txth extension\n";
+bool TXTHTraceFileWriter::Open(const std::filesystem::path& file_path) {
+    // check if at least .osi ending is present
+    if (file_path.extension().string() != ".txth") {
+        std::cerr << "ERROR: The trace file '" << file_path << "' must have a '.txth' extension." << std::endl;
+        return false;
+    }
+
+    // prevent opening again if already opened
+    if (trace_file_.is_open()) {
+        std::cerr << "ERROR: Opening file " << file_path << ", writer has already a file opened" << std::endl;
         return false;
     }
 
     trace_file_.open(file_path);
-    if (trace_file_.is_open()) {
-        file_open_ = true;
-        return true;
+    if (!trace_file_) {
+        std::cerr << "ERROR: Opening file " << file_path << std::endl;
+        return false;
     }
-    return false;
+    return true;
 }
 
 void TXTHTraceFileWriter::Close() {
-    if (file_open_) {
-        trace_file_.close();
-        file_open_ = false;
-    }
+    trace_file_.close();
 }
 
 template <typename T>
 bool TXTHTraceFileWriter::WriteMessage(T top_level_message) {
-    if (!file_open_) {
+    if (!(trace_file_ && trace_file_.is_open())) {
         std::cerr << "Error: Cannot write message, file is not open\n";
         return false;
     }
