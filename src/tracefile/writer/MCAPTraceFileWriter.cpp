@@ -21,7 +21,7 @@
 
 namespace {
 // helper functions from https://github.com/foxglove/mcap/blob/4ec37c5a5d0115bceaca428b1e8a0e3e5aae20cf/website/docs/guides/cpp/protobuf.md?plain=1#L198
-// TODO: might want to change to the approach used here https://github.com/foxglove/mcap/blob/main/cpp/examples/protobuf/writer.cpp
+
 // Recursively adds all `fd` dependencies to `fd_set`.
 void fdSetInternal(google::protobuf::FileDescriptorSet& fd_set, std::unordered_set<std::string>& files, const google::protobuf::FileDescriptor* file_descriptor) {
     for (int i = 0; i < file_descriptor->dependency_count(); ++i) {

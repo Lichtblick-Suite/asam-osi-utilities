@@ -24,18 +24,16 @@ target_include_directories(OSIUtilities PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 
 # Link against OSI made available by parent CMakeLists.txt
-if(LINK_WITH_SHARED_OSI)
+if (LINK_WITH_SHARED_OSI)
     target_link_libraries(OSIUtilities PRIVATE open_simulation_interface)
-else()
+else ()
     target_link_libraries(OSIUtilities PRIVATE open_simulation_interface_pic)
     include_directories(${OSI_INCLUDE_DIR})
-endif()
+endif ()
 
 # get mcap and its dependencies
-# todo change logic and cleanup
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(lz4 REQUIRED IMPORTED_TARGET liblz4)
 pkg_check_modules(zstd REQUIRED libzstd)
 target_link_libraries(OSIUtilities PRIVATE ${lz4_LIBRARIES} ${zstd_LIBRARIES})
-
 target_include_directories(OSIUtilities PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../lib/mcap/cpp/mcap/include)
