@@ -79,8 +79,8 @@ void ProcessMessage(const std::optional<osi3::ReadResult>& read_result, osi3::MC
 }
 
 struct ProgramOptions {
-    std::string input_file_path;
-    std::string output_file_path;
+    std::filesystem::path input_file_path;
+    std::filesystem::path output_file_path;
     osi3::ReaderTopLevelMessage message_type = osi3::ReaderTopLevelMessage::kUnknown;
 };
 
