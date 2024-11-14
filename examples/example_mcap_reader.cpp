@@ -30,13 +30,13 @@ void printHelp() {
               << "  input_file              Path to the input OSI MCAP trace file\n";
 }
 
-std::string parseArgs(const int argc, const char** argv) {
+std::filesystem::path parseArgs(const int argc, const char** argv) {
     if (argc < 2 || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
         printHelp();
         return "";
     }
 
-    return argv[1];
+    return std::filesystem::path(argv[1]);
 }
 
 int main(const int argc, const char** argv) {

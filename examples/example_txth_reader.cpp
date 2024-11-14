@@ -80,7 +80,7 @@ void CastMsgAndPrintTimestamp(const std::optional<osi3::ReadResult>& reading_res
 }
 
 struct ProgramOptions {
-    std::string file_path;
+    std::filesystem::path file_path;
     osi3::ReaderTopLevelMessage message_type = osi3::ReaderTopLevelMessage::kUnknown;
 };
 

@@ -20,7 +20,7 @@ std::string GetCurrentTimeAsString() {
     return oss.str();
 }
 
-std::string GenerateTempFilePath() {
+std::filesystem::path GenerateTempFilePath() {
     // create a path which follows the OSI specification recommendation
     std::string file_name = GetCurrentTimeAsString();
     const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
@@ -29,7 +29,7 @@ std::string GenerateTempFilePath() {
     file_name += "_10";  // 10 frames
     file_name += "_example-txth-writer.txth";
     const auto path = std::filesystem::temp_directory_path() / file_name;
-    return path.string();
+    return path;
 }
 
 int main(int argc, const char** argv) {
