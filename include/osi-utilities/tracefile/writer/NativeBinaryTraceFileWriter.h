@@ -23,15 +23,14 @@ class NativeBinaryTraceFileWriter final : public TraceFileWriter {
     bool Open(const std::string& file_path) override;
     void Close() override;
 
-    bool SetMetadata(const std::string& /*name*/, const std::unordered_map<std::string, std::string>& /*metadata_entries*/) override { return true; }
-
+    /**
+     * @brief Writes a protobuf message to the file
+     * @tparam T Type of the protobuf message
+     * @param top_level_message The message to write
+     * @return true if successful, false otherwise
+     */
     template <typename T>
     bool WriteMessage(T top_level_message);
-
-    template <typename T>
-    static bool WriteMessage(T /*top_level_message*/, const std::string& /*topic*/) {
-        return false;
-    }
 
    private:
     std::ofstream trace_file_;
@@ -39,4 +38,4 @@ class NativeBinaryTraceFileWriter final : public TraceFileWriter {
 };
 
 }  // namespace osi3
-#endif // OSIUTILITIES_TRACEFILE_WRITER_NATIVEBINARYTRACEFILEWRITER_H_
+#endif  // OSIUTILITIES_TRACEFILE_WRITER_NATIVEBINARYTRACEFILEWRITER_H_

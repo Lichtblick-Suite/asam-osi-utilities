@@ -23,15 +23,18 @@ class TXTHTraceFileWriter final : public TraceFileWriter {
     bool Open(const std::string& file_path) override;
     void Close() override;
 
-    bool SetMetadata(const std::string& name, const std::unordered_map<std::string, std::string>& metadata_entries) override { return false; }
-
+    /**
+     * @brief Writes a protobuf message to the file
+     * @tparam T Type of the protobuf message
+     * @param top_level_message The message to write
+     * @return true if successful, false otherwise
+     */
     template <typename T>
     bool WriteMessage(T top_level_message);
 
    private:
     std::ofstream trace_file_;
     bool file_open_ = false;
-
 };
 
 }  // namespace osi3

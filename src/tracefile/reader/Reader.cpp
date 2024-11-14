@@ -9,15 +9,18 @@
 #include "osi-utilities/tracefile/reader/TXTHTraceFileReader.h"
 #include "osi-utilities/tracefile/reader/MCAPTraceFileReader.h"
 
-std::unique_ptr<osi3::TraceFileReader> createTraceFileReader(const std::string& format) {
-    if (format == "mcap") {
-        return std::make_unique<osi3::MCAPTraceFileReader>();
+class TraceFileFactory {
+public:
+    static std::unique_ptr<osi3::TraceFileReader> createReader(const std::filesystem::path& path) {
+        if (path.extension().string() == ".osi") {
+            return std::make_unique<osi3::NativeBinaryTraceFileReader>();
+        }
+        if (path.extension().string() == ".mcap") {
+            return std::make_unique<osi3::MCAPTraceFileReader>();
+        }
+        if (path.extension().string() == ".txth") {
+            return std::make_unique<osi3::TXTHTraceFileReader>();
+        }
+        throw std::invalid_argument("Unsupported format: " + path.extension().string());
     }
-    if (format == "osi") {
-        return std::make_unique<osi3::NativeBinaryTraceFileReader>();
-    }
-    if (format == "txth") {
-        return std::make_unique<osi3::TXTHTraceFileReader>();
-    }
-    throw std::invalid_argument("Unsupported format: " + format);
-}
+};

@@ -19,6 +19,9 @@ namespace osi3 {
  *
  * This class provides an interface for writing protobuf messages to trace files.
  * Different implementations can support various file formats like MCAP.
+ *
+ * @Note The WriteMessage() function is intentionally omitted from this base class since it is format-specific.
+ * Users should dynamically cast to the concrete implementation class to access the appropriate WriteMessage() function.
  */
 class TraceFileWriter {
    public:
@@ -48,44 +51,11 @@ class TraceFileWriter {
     virtual bool Open(const std::string& file_path) = 0;
 
     /**
-     * @brief Writes a protobuf message to the file
-     * @tparam T Type of the protobuf message
-     * @param top_level_message The message to write
-     * @return true if successful, false otherwise
-     */
-    template <typename T>
-    bool WriteMessage(T top_level_message) = delete;
-
-    /**
-     * @brief Writes a protobuf message to the file
-     * @tparam T Type of the protobuf message
-     * @param top_level_message The message to write
-     * @param topic Optional topic name for the message
-     * @return true if successful, false otherwise
-     */
-    template <typename T>
-    bool WriteMessage(T top_level_message, const std::string& topic = "") = delete;
-
-    /**
-     * @brief Sets metadata for the trace file
-     * @param name Name of the metadata entry
-     * @param metadata_entries Key-value pairs of metadata
-     * @return true if successful, false otherwise
-     */
-    virtual bool SetMetadata(const std::string& name, const std::unordered_map<std::string, std::string>& metadata_entries) = 0;
-
-    /**
      * @brief Closes the trace file
      */
     virtual void Close() = 0;
 };
 
-/**
- * @brief Factory function to create trace file writers
- * @param format The desired output format (e.g., "mcap")
- * @return Unique pointer to a TraceFileWriter implementation
- */
-std::unique_ptr<TraceFileWriter> CreateTraceFileWriter(const std::string& format);
 
 }  // namespace osi3
 #endif

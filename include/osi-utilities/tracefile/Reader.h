@@ -8,6 +8,7 @@
 
 #include <google/protobuf/message.h>
 
+#include <filesystem>
 #include <memory>
 #include <optional>
 #include <string>
@@ -106,12 +107,26 @@ class TraceFileReader {
     virtual bool HasNext() = 0;
 };
 
-// TODO change to function which guesses on the filename endings
 /**
- * @brief Factory function to create trace file readers based on the input file format
- * @param format The format of the input file (e.g., "mcap")
- * @return Unique pointer to a TraceFileReader implementation
+ * @brief Factory class for creating trace file readers based on file extensions
  */
-std::unique_ptr<TraceFileReader> createTraceFileReader(const std::string& format);
+class TraceFileFactory {
+   public:
+    /**
+     * @brief Creates a reader instance based on the file extension
+     * @param path Path to the trace file
+     * @return Unique pointer to a TraceFileReader instance
+     * @throws std::invalid_argument if the file extension is not supported
+     *
+     * Supported formats:
+     * - .osi: Native binary format (NativeBinaryTraceFileReader)
+     * - .mcap: MCAP format (MCAPTraceFileReader)
+     * - .txth: TXTH format (TXTHTraceFileReader)
+     *
+     * @note It is still required to call Open(path) on the returned reader instance
+     */
+    static std::unique_ptr<TraceFileReader> createReader(const std::filesystem::path& path);
+};
+
 }  // namespace osi3
 #endif

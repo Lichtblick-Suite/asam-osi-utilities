@@ -96,7 +96,6 @@ bool MCAPTraceFileWriter::WriteMessage(T top_level_message, const std::string& t
         std::cerr << "Error: Failed to write message " << status.message;
         return false;
     }
-    std::cout << "Wrote message with timestamp: " << msg.logTime << std::endl;  // todo remove debug print
     return true;
 }
 
