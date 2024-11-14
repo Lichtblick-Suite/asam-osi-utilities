@@ -11,8 +11,7 @@
 #include "osi_version.pb.h"
 
 std::filesystem::path GenerateTempFilePath() {
-    const auto path = std::filesystem::temp_directory_path() / "sv_example.mcap";  // add sv to indicate sensor view as required by the OSI-specification
-    return path.string();
+    return std::filesystem::temp_directory_path() / "sv_example.mcap";  // add sv to indicate sensor view as required by the OSI-specification
 }
 
 int main(int argc, const char** argv) {

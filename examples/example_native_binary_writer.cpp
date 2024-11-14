@@ -28,7 +28,7 @@ std::filesystem::path GenerateTempFilePath() {
     file_name += "_" + google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
     file_name += "_10";  // 10 frames
     file_name += "_example-native-binary-writer.osi";
-    const auto path = std::filesystem::temp_directory_path() / file_name;
+    auto path = std::filesystem::temp_directory_path() / file_name;
     return path;
 }
 
