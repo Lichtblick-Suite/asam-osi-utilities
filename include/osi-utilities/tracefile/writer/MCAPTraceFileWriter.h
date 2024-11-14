@@ -7,6 +7,7 @@
 #define OSIUTILITIES_TRACEFILE_WRITER_MCAPTRACEFILEWRITER_H_
 
 #include <mcap/mcap.hpp>
+#include <google/protobuf/message.h>
 
 #include "../Writer.h"
 

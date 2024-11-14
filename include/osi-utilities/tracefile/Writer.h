@@ -6,10 +6,7 @@
 #ifndef OSIUTILITIES_TRACEFILE_WRITER_H_
 #define OSIUTILITIES_TRACEFILE_WRITER_H_
 
-#include <google/protobuf/message.h>
-
 #include <filesystem>
-#include <memory>
 #include <string>
 
 namespace osi3 {

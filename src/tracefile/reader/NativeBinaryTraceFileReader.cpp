@@ -6,7 +6,6 @@
 #include "osi-utilities/tracefile/reader/NativeBinaryTraceFileReader.h"
 
 #include <filesystem>
-#include <sstream>
 
 namespace osi3 {
 
