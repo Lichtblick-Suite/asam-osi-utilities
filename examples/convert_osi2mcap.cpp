@@ -23,13 +23,13 @@ std::string ExtractTimestampFromFileName(const std::filesystem::path& file_path)
     auto possible_timestamp = file_path.filename().string().substr(0, 16);
 
     // Parse the timestamp using std::get_time
-    tm tm = {};
-    std::istringstream ss(possible_timestamp);
-    ss >> std::get_time(&tm, "%Y%m%dT%H%M%SZ");
+    tm tm_struct = {};
+    std::istringstream string_stream(possible_timestamp);
+    string_stream >> std::get_time(&tm_struct, "%Y%m%dT%H%M%SZ");
     // Check if parsing was successful
-    if (ss.fail()) {
-        throw std::runtime_error(
-            "ERROR: Failed to parse timestamp.\n Only files following the recommended OSI .osi naming convention can be converted. Expected format: YYYYMMDDTHHMMSSZ");
+    if (string_stream.fail()) {
+        std::cerr << "ERROR: Failed to parse timestamp.\n Only files following the recommended OSI .osi naming convention can be converted. Expected format: YYYYMMDDTHHMMSSZ";
+        exit(1);
     }
 
     std::cout << "Assuming timestamp for required MCAP metadata 'zero_time' and 'timestamp' to be : " << possible_timestamp << std::endl;
