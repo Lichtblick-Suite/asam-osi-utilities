@@ -18,6 +18,24 @@
 #include "osi_trafficcommandupdate.pb.h"
 #include "osi_trafficupdate.pb.h"
 
+std::string ExtractTimestampFromFileName(const std::filesystem::path& file_path) {
+    // Get first 16 characters which should be the timestamp
+    auto possible_timestamp = file_path.filename().string().substr(0, 16);
+
+    // Parse the timestamp using std::get_time
+    tm tm = {};
+    std::istringstream ss(possible_timestamp);
+    ss >> std::get_time(&tm, "%Y%m%dT%H%M%SZ");
+    // Check if parsing was successful
+    if (ss.fail()) {
+        throw std::runtime_error(
+            "ERROR: Failed to parse timestamp.\n Only files following the recommended OSI .osi naming convention can be converted. Expected format: YYYYMMDDTHHMMSSZ");
+    }
+
+    std::cout << "Assuming timestamp for required MCAP metadata 'zero_time' and 'timestamp' to be : " << possible_timestamp << std::endl;
+    return possible_timestamp;
+}
+
 const std::unordered_map<osi3::ReaderTopLevelMessage, const google::protobuf::Descriptor*> kMessageTypeToDescriptor = {
     {osi3::ReaderTopLevelMessage::kGroundTruth, osi3::GroundTruth::descriptor()},
     {osi3::ReaderTopLevelMessage::kSensorData, osi3::SensorData::descriptor()},
@@ -151,6 +169,14 @@ int main(const int argc, const char** argv) {
         return 1;
     }
 
+    // according to the OSI specification mcap must contain a timestamp and zero_time metadata entry
+    // try to parse the file timestamp from the .osi file name (as it should follow the recommended OSI naming conventions)
+    const auto timestamp_from_osi_file = ExtractTimestampFromFileName(options->input_file_path);
+    std::unordered_map<std::string, std::string> metadata_entries;
+    metadata_entries["timestamp"] = timestamp_from_osi_file;
+    metadata_entries["zero_time"] = timestamp_from_osi_file;
+    trace_file_writer.SetMetadata("asam_osi", metadata_entries);
+
     const google::protobuf::Descriptor* descriptor = nullptr;
     try {
         descriptor = GetDescriptorForMessageType(trace_file_reader.GetMessageType());
@@ -166,7 +192,6 @@ int main(const int argc, const char** argv) {
     trace_file_writer.AddChannel("ConvertedTrace", descriptor);
 
     while (trace_file_reader.HasNext()) {
-        std::cout << "reading next message\n";
         auto reading_result = trace_file_reader.ReadMessage();
         ProcessMessage(reading_result, trace_file_writer);
     }

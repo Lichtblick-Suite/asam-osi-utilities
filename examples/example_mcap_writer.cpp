@@ -40,6 +40,7 @@ int main(int argc, const char** argv) {
     osi3::SensorView sensor_view_1;
     sensor_view_1.mutable_version()->CopyFrom(osi_version);
     sensor_view_1.mutable_sensor_id()->set_value(0);
+    sensor_view_1.mutable_host_vehicle_id()->set_value(12);
 
     auto* const ground_truth_1 = sensor_view_1.mutable_global_ground_truth();
     ground_truth_1->mutable_version()->CopyFrom(osi_version);
