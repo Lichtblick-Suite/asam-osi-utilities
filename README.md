@@ -1,4 +1,4 @@
-# OSI Utilities
+# ASAM OSI Utilities
 
 ![Build](https://github.com/OpenSimulationInterface/osi-utilities/actions/workflows/ubuntu.yml/badge.svg)
 
