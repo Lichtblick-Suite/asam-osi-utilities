@@ -1,6 +1,6 @@
 # ASAM OSI Utilities
 
-![Build](https://github.com/OpenSimulationInterface/osi-utilities/actions/workflows/ubuntu.yml/badge.svg)
+![Build](https://github.com/Lichtblick-Suite/asam-osi-utilities/actions/workflows/ubuntu.yml/badge.svg)
 
 A utility library that provides essential tools, helper functions, and implementation best practices for working with the [ASAM Open Simulation Interface (OSI)](https://opensimulationinterface.github.io/osi-antora-generator/asamosi/latest/specification/index.html) standard. This library streamlines OSI data handling and makes integration into applications and simulations easier.
 
@@ -34,7 +34,7 @@ sudo apt install build-essential cmake libzstd-dev liblz4-dev protobuf-compiler
 Clone the repository incl. submodules
 
 ```bash
-git clone --recurse-submodules https://github.com/OpenSimulationInterface/osi-utilities.git
+git clone --recurse-submodules https://github.com/Lichtblick-Suite/asam-osi-utilities.git
 ```
 
 Create build directory and configure using CMake
