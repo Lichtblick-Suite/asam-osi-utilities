@@ -46,7 +46,7 @@ You can try it with an example osi trace file generated with `example_native_bin
 
 This example demonstrates how to write OSI data to a native binary file from your application.
 As an example, a SensorView message with one moving object is created and written to the OSI trace file.
-It creates the example file `example_native_binary_writer.osi` in the temp directory of your operating system, on Linx this is `/tmp`.
+It creates the example file `example_native_binary_writer.osi` in the temp directory of your operating system, on Linux this is `/tmp`.
 
 ```bash
 ./example_native_binary_writer
@@ -66,7 +66,7 @@ You can try it with an example osi trace file generated with `example_txth_write
 
 This example demonstrates how to write OSI data to a human-readable txth file from your application.
 As an example, a SensorView message with one moving object is created and written to the txth file.
-It creates the example file `example_txth_writer.txth` in the temp directory of your operating system, on Linx this is `/tmp`.
+It creates the example file `example_txth_writer.txth` in the temp directory of your operating system, on Linux this is `/tmp`.
 
 ```bash
 ./example_txth_writer
