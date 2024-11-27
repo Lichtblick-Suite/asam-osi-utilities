@@ -1,0 +1,19 @@
+name: SPDX License Check
+
+on: [push, pull_request]
+
+jobs:
+  check-spdx-headers:
+    name: SPDX License Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - uses: enarx/spdx@c3e8116ed31c31b3c2e58a26ba5cac407510ca37
+        with:
+          licenses: |-
+            Apache-2.0
+            BSD-3-Clause
+            BSD-2-Clause
+            MIT
+            MPL-2.0
