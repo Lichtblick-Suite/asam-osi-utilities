@@ -172,10 +172,15 @@ int main(const int argc, const char** argv) {
     // according to the OSI specification mcap must contain a timestamp and zero_time metadata entry
     // try to parse the file timestamp from the .osi file name (as it should follow the recommended OSI naming conventions)
     const auto timestamp_from_osi_file = ExtractTimestampFromFileName(options->input_file_path);
-    std::unordered_map<std::string, std::string> metadata_entries;
-    metadata_entries["timestamp"] = timestamp_from_osi_file;
-    metadata_entries["zero_time"] = timestamp_from_osi_file;
-    trace_file_writer.SetMetadata("asam_osi", metadata_entries);
+
+    auto required_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
+    required_metadata.metadata["description"] = "Converted from " + options->output_file_path.string();
+    required_metadata.metadata["zero_time"] = timestamp_from_osi_file;
+    if (!trace_file_writer.AddFileMetadata(required_metadata)) {
+        std::cerr << "Failed to add required metadata to trace_file." << std::endl;
+        exit(1);
+    }
+
 
     const google::protobuf::Descriptor* descriptor = nullptr;
     try {

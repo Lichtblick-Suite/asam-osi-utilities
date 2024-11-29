@@ -19,10 +19,11 @@ protected:
     }
 
     void AddRequiredMetadata() {
-        std::unordered_map<std::string, std::string> metadata_entries;
-        metadata_entries["timestamp"] = writer_.GetCurrentTimeAsString();
-        metadata_entries["zero_time"] = writer_.GetCurrentTimeAsString();
-        writer_.SetMetadata("asam_osi", metadata_entries);
+        auto required_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
+        required_metadata.metadata["description"] = "Example mcap trace file created with the ASAM OSI utilities library."; // optional description
+        if (!writer_.AddFileMetadata(required_metadata)) {
+            throw std::runtime_error("Failed to add required metadata.");
+        }
     }
 };
 
@@ -98,7 +99,7 @@ TEST_F(MCAPTraceFileWriterTest, SetMetadata) {
         {"key2", "value2"}
     };
 
-    EXPECT_TRUE(writer_.SetMetadata("test_metadata", metadata));
+    EXPECT_TRUE(writer_.AddFileMetadata("test_metadata", metadata));
 }
 
 TEST_F(MCAPTraceFileWriterTest, AddChannel) {

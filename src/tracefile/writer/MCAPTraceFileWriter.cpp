@@ -60,7 +60,6 @@ bool MCAPTraceFileWriter::Open(const std::filesystem::path& file_path) {
         return false;
     }
     mcap_writer_.open(trace_file_, mcap_options_);
-    this->AddVersionMetadata();
     return true;
 }
 
@@ -70,7 +69,7 @@ bool MCAPTraceFileWriter::Open(const std::filesystem::path& file_path, const mca
 }
 
 template <typename T>
-bool MCAPTraceFileWriter::WriteMessage(T top_level_message, const std::string& topic) {
+bool MCAPTraceFileWriter::WriteMessage(const T& top_level_message, const std::string& topic) {
     if (topic.empty()) {
         std::cerr << "ERROR: cannot write message, topic is empty\n";
         return false;
@@ -107,23 +106,41 @@ bool MCAPTraceFileWriter::WriteMessage(T top_level_message, const std::string& t
     return true;
 }
 
-bool MCAPTraceFileWriter::SetMetadata(const std::string& name, const std::unordered_map<std::string, std::string>& metadata_entries) {
-    mcap::Metadata metadata;
-    metadata.name = name;
-    metadata.metadata = metadata_entries;
-
+bool MCAPTraceFileWriter::AddFileMetadata(const mcap::Metadata& metadata) {
     // check if the provided metadata contains the required metadata by the OSI specification
     // to allow writing messages to the trace file
-    if ((metadata.name == "asam_osi") && (metadata.metadata.find("timestamp") != metadata.metadata.end()) && (metadata.metadata.find("zero_time") != metadata.metadata.end())) {
-        this->required_metadata_added_ = true;
+    if (metadata.name  == "net.asam.osi.trace") {
+
+        if (required_metadata_added_) {
+            std::cerr << "ERROR: cannot add net.asam.osi.trace metadata record, it was already added.\n";
+            return false;
+        }
+
+        constexpr std::array<const char*, 5> kRequiredFields = {"version", "min_osi_version", "max_osi_version", "min_protobuf_version", "max_protobuf_version"};
+        for (const auto& field : kRequiredFields) {
+            if (metadata.metadata.find(field) == metadata.metadata.end()) {
+                std::cerr << "ERROR: cannot add net.asam.osi.trac meta-data record without a " << field << " field.\n";
+                return false;
+            }
+        }
+        required_metadata_added_ = true;
     }
 
     // add metadata to file
     if (const auto status = mcap_writer_.write(metadata); status.code != mcap::StatusCode::Success) {
-        std::cerr << "ERROR: Failed to write metadata with name " << name << "\n" << status.message;
+        std::cerr << "ERROR: Failed to write metadata with name " << metadata.name << "\n" << status.message;
         return false;
     }
     return true;
+}
+
+
+
+bool MCAPTraceFileWriter::AddFileMetadata(const std::string& name, const std::unordered_map<std::string, std::string>& metadata_entries) {
+    mcap::Metadata metadata;
+    metadata.name = name;
+    metadata.metadata = metadata_entries;
+    return this->AddFileMetadata(metadata);
 }
 
 void MCAPTraceFileWriter::Close() {
@@ -131,15 +148,20 @@ void MCAPTraceFileWriter::Close() {
     trace_file_.close();
 }
 
-void MCAPTraceFileWriter::AddVersionMetadata() {
-    mcap::Metadata metadata_versions{"versions"};
-    const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
-    metadata_versions.metadata["osi"] =
-        std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
+mcap::Metadata MCAPTraceFileWriter::PrepareRequiredFileMetadata() {
+    mcap::Metadata metadata;
+    metadata.name = "net.asam.osi.trace";
 
-    if (const auto status = mcap_writer_.write(metadata_versions); status.code != mcap::StatusCode::Success) {
-        throw std::runtime_error("ERROR: Failed to write metadata versions. " + status.message);
-    }
+    const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
+    const auto osi_version_string =
+        std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
+    metadata.metadata["version"] = osi_version_string;
+    metadata.metadata["min_osi_version"] = osi_version_string;
+    metadata.metadata["max_osi_version"] = osi_version_string;
+    metadata.metadata["min_protobuf_version"] = google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
+    metadata.metadata["max_protobuf_version"] = google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
+
+    return metadata;
 }
 
 uint16_t MCAPTraceFileWriter::AddChannel(const std::string& topic, const google::protobuf::Descriptor* descriptor, std::unordered_map<std::string, std::string> channel_metadata) {
@@ -188,7 +210,8 @@ std::string MCAPTraceFileWriter::GetCurrentTimeAsString() {
     const auto now = std::chrono::system_clock::now();
     const auto now_in_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
     const auto timer = std::chrono::system_clock::to_time_t(now);
-    const std::tm utc_time_structure = *std::gmtime(&timer);  // Greenwich Mean Time (GMT) is in Coordinated Universal Time (UTC) zone
+    const std::tm utc_time_structure = *std::gmtime(&timer);
+    // Greenwich Mean Time (GMT) is in Coordinated Universal Time (UTC) zone
     std::ostringstream oss;
     oss << std::put_time(&utc_time_structure, "%Y%m%dT%H%M%S");
     oss << '.' << std::setfill('0') << std::setw(1) << (now_in_ms.count() / 100);
@@ -197,13 +220,13 @@ std::string MCAPTraceFileWriter::GetCurrentTimeAsString() {
 }
 
 // template instantiations of allowed OSI top-level messages
-template bool MCAPTraceFileWriter::WriteMessage<osi3::GroundTruth>(osi3::GroundTruth, const std::string&);
-template bool MCAPTraceFileWriter::WriteMessage<osi3::SensorData>(osi3::SensorData, const std::string&);
-template bool MCAPTraceFileWriter::WriteMessage<osi3::SensorView>(osi3::SensorView, const std::string&);
-template bool MCAPTraceFileWriter::WriteMessage<osi3::HostVehicleData>(osi3::HostVehicleData, const std::string&);
-template bool MCAPTraceFileWriter::WriteMessage<osi3::TrafficCommand>(osi3::TrafficCommand, const std::string&);
-template bool MCAPTraceFileWriter::WriteMessage<osi3::TrafficCommandUpdate>(osi3::TrafficCommandUpdate, const std::string&);
-template bool MCAPTraceFileWriter::WriteMessage<osi3::TrafficUpdate>(osi3::TrafficUpdate, const std::string&);
-template bool MCAPTraceFileWriter::WriteMessage<osi3::MotionRequest>(osi3::MotionRequest, const std::string&);
-template bool MCAPTraceFileWriter::WriteMessage<osi3::StreamingUpdate>(osi3::StreamingUpdate, const std::string&);
+template bool MCAPTraceFileWriter::WriteMessage<osi3::GroundTruth>(const osi3::GroundTruth&, const std::string&);
+template bool MCAPTraceFileWriter::WriteMessage<osi3::SensorData>(const osi3::SensorData&, const std::string&);
+template bool MCAPTraceFileWriter::WriteMessage<osi3::SensorView>(const osi3::SensorView&, const std::string&);
+template bool MCAPTraceFileWriter::WriteMessage<osi3::HostVehicleData>(const osi3::HostVehicleData&, const std::string&);
+template bool MCAPTraceFileWriter::WriteMessage<osi3::TrafficCommand>(const osi3::TrafficCommand&, const std::string&);
+template bool MCAPTraceFileWriter::WriteMessage<osi3::TrafficCommandUpdate>(const osi3::TrafficCommandUpdate&, const std::string&);
+template bool MCAPTraceFileWriter::WriteMessage<osi3::TrafficUpdate>(const osi3::TrafficUpdate&, const std::string&);
+template bool MCAPTraceFileWriter::WriteMessage<osi3::MotionRequest>(const osi3::MotionRequest&, const std::string&);
+template bool MCAPTraceFileWriter::WriteMessage<osi3::StreamingUpdate>(const osi3::StreamingUpdate&, const std::string&);
 }  // namespace osi3

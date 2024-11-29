@@ -24,10 +24,12 @@ int main(int argc, const char** argv) {
     trace_file_writer.Open(trace_file_path);
 
     // add OSI-specification mandatory metadata for the entire trace file
-    std::unordered_map<std::string, std::string> metadata_entries;
-    metadata_entries["timestamp"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString();
-    metadata_entries["zero_time"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString();
-    trace_file_writer.SetMetadata("asam_osi", metadata_entries);
+    auto required_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
+    required_metadata.metadata["description"] = "Example mcap trace file created with the ASAM OSI utilities library."; // optional description
+    if (!trace_file_writer.AddFileMetadata(required_metadata)) {
+        std::cerr << "Failed to add required metadata to trace_file." << std::endl;
+        exit(1);
+    }
 
     // add a channel to store some data
     const std::string topic = "Sensor_1_Input";
@@ -71,6 +73,7 @@ int main(int argc, const char** argv) {
         trace_file_writer.WriteMessage(sensor_view_1, topic);
     }
 
+    // Close the file to flush the last piece of data from memory and ensure a clean exit state.
     trace_file_writer.Close();
 
     std::cout << "Finished MCAP Writer example" << std::endl;

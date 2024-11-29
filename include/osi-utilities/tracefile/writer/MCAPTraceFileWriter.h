@@ -6,8 +6,9 @@
 #ifndef OSIUTILITIES_TRACEFILE_WRITER_MCAPTRACEFILEWRITER_H_
 #define OSIUTILITIES_TRACEFILE_WRITER_MCAPTRACEFILEWRITER_H_
 
-#include <mcap/mcap.hpp>
 #include <google/protobuf/message.h>
+
+#include <mcap/mcap.hpp>
 
 #include "../Writer.h"
 
@@ -42,15 +43,36 @@ class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
      * @return true if successful, false otherwise
      */
     template <typename T>
-    bool WriteMessage(T top_level_message, const std::string& topic = "");
+    bool WriteMessage(const T& top_level_message, const std::string& topic = "");
 
     /**
-     * @brief Sets metadata for the trace file
+     * @brief Adds metadata for the trace file
+     * @param metadata MCAP metadata object
+     * @return true if successful, false otherwise
+     */
+    bool AddFileMetadata(const mcap::Metadata& metadata);
+
+    /**
+     * @brief Adds metadata for the trace file
+     *
+     * This overload allows for specification of metadata entries by name and key-value pairs
+     *
      * @param name Name of the metadata entry
      * @param metadata_entries Key-value pairs of metadata
      * @return true if successful, false otherwise
      */
-    bool SetMetadata(const std::string& name, const std::unordered_map<std::string, std::string>& metadata_entries);
+    bool AddFileMetadata(const std::string& name, const std::unordered_map<std::string, std::string>& metadata_entries);
+
+    /**
+     * @brief Prepares the required (by OSI spec.) metadata for the MCAP trace file.
+     *
+     * This function initializes and populates an `mcap::Metadata` object with information
+     * specific to the OSI (Open Simulation Interface) trace format and its versioning.
+     * The metadata includes details about the OSI version, protobuf version.
+     *
+     * @return mcap::Metadata Object containing the necessary metadata for the MCAP trace file.
+     */
+    static mcap::Metadata PrepareRequiredFileMetadata();
 
     /**
      * @brief Adds a new channel to the MCAP file
@@ -97,7 +119,7 @@ class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
      *
      * Includes OSI version information and file creation timestamp
      */
-    void AddVersionMetadata();
+    void AddVersionToFileMetadata();
 };
 }  // namespace osi3
 #endif  // OSIUTILITIES_TRACEFILE_WRITER_MCAPTRACEFILEWRITER_H_
