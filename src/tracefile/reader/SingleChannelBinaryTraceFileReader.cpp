@@ -40,12 +40,14 @@ bool SingleChannelBinaryTraceFileReader::Open(const std::filesystem::path& file_
             message_type_by_filename = value;
             break;
         }
-        }
-    if (message_type_ != ReaderTopLevelMessage::kUnknown) { // set manually by user
+    }
+    if (message_type_ != ReaderTopLevelMessage::kUnknown) {  // set manually by user
         // check if message_type_by_filename is the same as the one specified by the user
         if (message_type_ != message_type_by_filename) {
-            std::cerr << "WARNING: The trace file '" << file_path << "' has a filename that suggests a different message type than the one specified when opening the file (e.g. manually by the user). Using the manually specified message type."
-                << std::endl;
+            std::cerr << "WARNING: The trace file '" << file_path
+                      << "' has a filename that suggests a different message type than the one specified when opening the file (e.g. manually by the user). Using the manually "
+                         "specified message type."
+                      << std::endl;
         }
     } else {
         message_type_ = message_type_by_filename;
