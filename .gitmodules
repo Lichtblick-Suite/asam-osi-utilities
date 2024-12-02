@@ -1,0 +1,3 @@
+[submodule "lib/mcap"]
+	path = lib/mcap
+	url = https://github.com/foxglove/mcap.git

@@ -1,0 +1,22 @@
+# Use the Google style in this project.
+Language:        Cpp
+BasedOnStyle: Google
+
+# Google style only requires consistency: "int& a" vs. "int &a" vs. "int & a"
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+# Google style only requires consistency: "const int a" vs. "int const a"
+QualifierAlignment: Left
+
+# empty lines between function definitions
+SeparateDefinitionBlocks: Always
+EmptyLineBeforeAccessModifier: LogicalBlock
+
+# break with the Google style but be consistent with python
+IndentWidth: 4
+UseTab: Never
+
+# allow more characters per line
+ColumnLimit: 180
+

@@ -1,0 +1,60 @@
+# Subfolders
+build/
+dist/
+doc/html
+doc/latex
+osi/
+osi3/
+
+# Specific extensions
+*.egg-info
+.project
+
+# Building
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+CTestTestfile.cmake
+Makefile
+
+build
+cmake_install.cmake
+install_manifest.txt
+osi_version.proto
+
+compile_commands.json
+
+# Python-generated files
+__pycache__/
+.venv/
+venv/
+*.py[cod]
+proto2cpp.log
+.clang-format
+githooks/pre-commit
+
+# Eclipse-specific files
+*.cproject
+*.project
+.settings/
+
+# PyCharm specific files
+.idea
+.vscode/settings.json
+
+# Clion specific files
+.idea/
+cmake-build-*/
+
+# VS Code specific files
+.vscode/
+.history/
+*.vsix
+
+# Local build tool output
+local_build_tools/*.html
+
+# trace file
+*.osi
+*.txth
+*.mcap
