@@ -20,6 +20,8 @@ add_executable(
         ${src_sources}
 )
 target_link_libraries(unit_tests PRIVATE GTest::gtest_main)
+# see src/CMakeLists.txt
+target_compile_definitions(unit_tests PRIVATE OSI_TRACE_FILE_SPEC_VERSION="3.7.1")
 
 # Link against OSI made available by parent CMakeLists.txt
 if (LINK_WITH_SHARED_OSI)
