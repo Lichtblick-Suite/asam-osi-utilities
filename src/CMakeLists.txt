@@ -19,6 +19,14 @@ set(OSIUtilities_SRCS
 # Create a library target for the entire library
 add_library(OSIUtilities ${OSIUtilities_SRCS})
 
+# add a compile definition to specify the version of the trace file specification.
+# This is not the version of the linked OSI library, but the version of the trace file spec
+# which is implemented (in functions, methods etc.) by this library (OSIUtilities).
+# TODO: As of today (2nd of December 2024) mcap support is neither merged nor officially released yet.
+# TODO: Change the following value once a new OSI version including mcap is officially released. Until then assume 3.7.1.
+target_compile_definitions(OSIUtilities PRIVATE OSI_TRACE_FILE_SPEC_VERSION="3.7.1")
+
+
 # Specify the public headers for the library for clean access
 target_include_directories(OSIUtilities PUBLIC ${PROJECT_SOURCE_DIR}/include)
 

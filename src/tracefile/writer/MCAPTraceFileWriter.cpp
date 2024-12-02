@@ -155,7 +155,7 @@ mcap::Metadata MCAPTraceFileWriter::PrepareRequiredFileMetadata() {
     const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
     const auto osi_version_string =
         std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
-    metadata.metadata["version"] = osi_version_string;
+    metadata.metadata["version"] = OSI_TRACE_FILE_SPEC_VERSION;
     metadata.metadata["min_osi_version"] = osi_version_string;
     metadata.metadata["max_osi_version"] = osi_version_string;
     metadata.metadata["min_protobuf_version"] = google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
