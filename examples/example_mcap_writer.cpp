@@ -23,12 +23,13 @@ int main(int argc, const char** argv) {
     std::cout << "Creating trace_file at " << trace_file_path << std::endl;
     trace_file_writer.Open(trace_file_path);
 
-    // add OSI-specification mandatory metadata for the entire trace file
-    auto required_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
-    required_metadata.metadata["description"] = "Example mcap trace file created with the ASAM OSI utilities library."; // optional
-    required_metadata.metadata["creation_time"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString(); // optional
-    required_metadata.metadata["authors"] = "Jane Doe, John Doe"; // optional
-    if (!trace_file_writer.AddFileMetadata(required_metadata)) {
+    // add required and optional metadata to the net.asam.osi.trace metadata record
+    auto net_asam_osi_trace_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
+    // Add optional metadata to the net.asam.osi.trace metadata record, as recommended by the OSI specification.
+    net_asam_osi_trace_metadata.metadata["description"] = "Example mcap trace file created with the ASAM OSI utilities library."; // optional field
+    net_asam_osi_trace_metadata.metadata["creation_time"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString(); // optional field
+    net_asam_osi_trace_metadata.metadata["authors"] = "Jane Doe, John Doe"; // optional field
+    if (!trace_file_writer.AddFileMetadata(net_asam_osi_trace_metadata)) {
         std::cerr << "Failed to add required metadata to trace_file." << std::endl;
         exit(1);
     }

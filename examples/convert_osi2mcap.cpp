@@ -18,7 +18,7 @@
 #include "osi_trafficcommandupdate.pb.h"
 #include "osi_trafficupdate.pb.h"
 
-std::string ExtractTimestampFromFileName(const std::filesystem::path& file_path) {
+std::optional<std::string> ExtractTimestampFromFileName(const std::filesystem::path& file_path) {
     // Get first 16 characters which should be the timestamp
     auto possible_timestamp = file_path.filename().string().substr(0, 16);
 
@@ -26,14 +26,18 @@ std::string ExtractTimestampFromFileName(const std::filesystem::path& file_path)
     tm tm_struct = {};
     std::istringstream string_stream(possible_timestamp);
     string_stream >> std::get_time(&tm_struct, "%Y%m%dT%H%M%SZ");
-    // Check if parsing was successful
+
+    // Return nullopt if parsing failed
     if (string_stream.fail()) {
-        std::cerr << "ERROR: Failed to parse timestamp.\n Only files following the recommended OSI .osi naming convention can be converted. Expected format: YYYYMMDDTHHMMSSZ";
-        exit(1);
+        return std::nullopt;
     }
 
-    std::cout << "Assuming timestamp for required MCAP metadata 'zero_time' and 'timestamp' to be : " << possible_timestamp << std::endl;
-    return possible_timestamp;
+    // Format the timestamp in the by OSI specified mcap metadata format for the zero_time field
+    std::ostringstream formatted_timestamp;
+    formatted_timestamp << std::put_time(&tm_struct, "%Y-%m-%dT%H:%M:%SZ");
+
+    std::cout << "Found timestamp for MCAP metadata 'zero_time' from tracefile name: " << formatted_timestamp.str() << std::endl;
+    return formatted_timestamp.str();
 }
 
 const std::unordered_map<osi3::ReaderTopLevelMessage, const google::protobuf::Descriptor*> kMessageTypeToDescriptor = {
@@ -169,14 +173,15 @@ int main(const int argc, const char** argv) {
         return 1;
     }
 
-    // according to the OSI specification mcap must contain a timestamp and zero_time metadata entry
-    // try to parse the file timestamp from the .osi file name (as it should follow the recommended OSI naming conventions)
-    const auto timestamp_from_osi_file = ExtractTimestampFromFileName(options->input_file_path);
-
-    auto required_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
-    required_metadata.metadata["description"] = "Converted from " + options->output_file_path.string();
-    required_metadata.metadata["zero_time"] = timestamp_from_osi_file;
-    if (!trace_file_writer.AddFileMetadata(required_metadata)) {
+    // add required and optional metadata to the net.asam.osi.trace metadata record
+    auto net_asam_osi_trace_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
+    // Add optional metadata to the net.asam.osi.trace metadata record, as recommended by the OSI specification.
+    net_asam_osi_trace_metadata.metadata["description"] = "Converted from " + options->output_file_path.string(); // optional field
+    net_asam_osi_trace_metadata.metadata["creation_time"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString(); // optional field
+    if (const auto timestamp_from_osi_file = ExtractTimestampFromFileName(options->input_file_path)) {
+        net_asam_osi_trace_metadata.metadata["zero_time"] = timestamp_from_osi_file.value(); // optional field
+    }
+    if (!trace_file_writer.AddFileMetadata(net_asam_osi_trace_metadata)) {
         std::cerr << "Failed to add required metadata to trace_file." << std::endl;
         exit(1);
     }
