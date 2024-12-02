@@ -192,9 +192,9 @@ uint16_t MCAPTraceFileWriter::AddChannel(const std::string& topic, const google:
 
     // add osi version to channel metadata as required by spec.
     const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
-    channel_metadata["osi_version"] =
+    channel_metadata["net.asam.osi.trace.channel.osi_version"] =
         std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
-    channel_metadata["protobuf_version"] = google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
+    channel_metadata["net.asam.osi.trace.channel.protobuf_version"] = google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
 
     // add the channel to the writer/mcap file
     mcap::Channel channel(topic, "protobuf", path_schema.id, channel_metadata);
@@ -213,7 +213,7 @@ std::string MCAPTraceFileWriter::GetCurrentTimeAsString() {
     const std::tm utc_time_structure = *std::gmtime(&timer);
     // Greenwich Mean Time (GMT) is in Coordinated Universal Time (UTC) zone
     std::ostringstream oss;
-    oss << std::put_time(&utc_time_structure, "%Y%m%dT%H%M%S");
+    oss << std::put_time(&utc_time_structure, "%Y-%m-%dT%H:%M:%S");
     oss << '.' << std::setfill('0') << std::setw(1) << (now_in_ms.count() / 100);
     oss << "Z";  // As GMT is used as a reference time zone, add Z to indicate UTC (+00:00)
     return oss.str();

@@ -85,12 +85,11 @@ class MCAPTraceFileWriter final : public osi3::TraceFileWriter {
 
     /**
      * @brief Helper function that returns the current time as a formatted string
-     * @return Current timestamp as string in ISO 8601 format
+     * @return Current timestamp as string in required format
      *
      * This helper function is intended to be used when creating metadata entries
      * that require timestamps, particularly for the OSI-specification mandatory metadata.
-     * The timestamp format follows ISO 8601 standards for consistent
-     * time representation across the MCAP file.
+     * The timestamp format follows the OSI specification for zero_time and creation_time metadata.
      */
     static std::string GetCurrentTimeAsString();
 

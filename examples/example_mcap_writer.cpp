@@ -11,7 +11,7 @@
 #include "osi_version.pb.h"
 
 std::filesystem::path GenerateTempFilePath() {
-    return std::filesystem::temp_directory_path() / "sv_example.mcap";  // add sv to indicate sensor view as required by the OSI-specification
+    return std::filesystem::temp_directory_path() / "sv_example.mcap";  // add sv to indicate sensor view as recommended by the OSI-specification
 }
 
 int main(int argc, const char** argv) {
@@ -25,7 +25,9 @@ int main(int argc, const char** argv) {
 
     // add OSI-specification mandatory metadata for the entire trace file
     auto required_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
-    required_metadata.metadata["description"] = "Example mcap trace file created with the ASAM OSI utilities library."; // optional description
+    required_metadata.metadata["description"] = "Example mcap trace file created with the ASAM OSI utilities library."; // optional
+    required_metadata.metadata["creation_time"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString(); // optional
+    required_metadata.metadata["authors"] = "Jane Doe, John Doe"; // optional
     if (!trace_file_writer.AddFileMetadata(required_metadata)) {
         std::cerr << "Failed to add required metadata to trace_file." << std::endl;
         exit(1);
@@ -33,7 +35,7 @@ int main(int argc, const char** argv) {
 
     // add a channel to store some data
     const std::string topic = "Sensor_1_Input";
-    const std::unordered_map<std::string, std::string> channel_metadata = {{"description", "This channel contains the input data (SensorView) for sensor 1"}};
+    const std::unordered_map<std::string, std::string> channel_metadata = {{"net.asam.osi.trace.channel.description", "This channel contains the input data (SensorView) for sensor 1"}};
     trace_file_writer.AddChannel(topic, osi3::SensorView::descriptor(), channel_metadata);
 
     // create OSI data to store
