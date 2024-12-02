@@ -8,8 +8,8 @@ option(BUILD_TESTING "Build the testing suite" ON)
 set(OSIUtilities_SRCS
         tracefile/reader/Reader.cpp
         tracefile/MCAPImplementation.cpp
-        tracefile/reader/NativeBinaryTraceFileReader.cpp
-        tracefile/writer/NativeBinaryTraceFileWriter.cpp
+        tracefile/reader/SingleChannelBinaryTraceFileReader.cpp
+        tracefile/writer/SingleChannelBinaryTraceFileWriter.cpp
         tracefile/reader/TXTHTraceFileReader.cpp
         tracefile/writer/TXTHTraceFileWriter.cpp
         tracefile/reader/MCAPTraceFileReader.cpp

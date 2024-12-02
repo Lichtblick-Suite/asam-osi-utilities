@@ -5,7 +5,7 @@
 
 #include "osi-utilities/tracefile/Reader.h"
 
-#include "osi-utilities/tracefile/reader/NativeBinaryTraceFileReader.h"
+#include "osi-utilities/tracefile/reader/SingleChannelBinaryTraceFileReader.h"
 #include "osi-utilities/tracefile/reader/TXTHTraceFileReader.h"
 #include "osi-utilities/tracefile/reader/MCAPTraceFileReader.h"
 
@@ -13,7 +13,7 @@ class TraceFileFactory {
 public:
     static std::unique_ptr<osi3::TraceFileReader> createReader(const std::filesystem::path& path) {
         if (path.extension().string() == ".osi") {
-            return std::make_unique<osi3::NativeBinaryTraceFileReader>();
+            return std::make_unique<osi3::SingleChannelBinaryTraceFileReader>();
         }
         if (path.extension().string() == ".mcap") {
             return std::make_unique<osi3::MCAPTraceFileReader>();

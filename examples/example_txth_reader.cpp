@@ -139,6 +139,8 @@ int main(const int argc, const char** argv) {
         return 1;
     }
 
+    std::cout << "Starting txth reader example:" << std::endl;
+
     // Open the trace file
     // downstream functions of Open will guess the message type from the filename (options->message_type has the unknown value)
     // or use the provided cli argument value for the message type
@@ -156,6 +158,6 @@ int main(const int argc, const char** argv) {
         CastMsgAndPrintTimestamp(reading_result);
     }
 
-    std::cout << "Finished native binary reader example" << std::endl;
+    std::cout << "Finished txth reader example" << std::endl;
     return 0;
 }

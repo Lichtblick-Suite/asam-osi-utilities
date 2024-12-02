@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#include <osi-utilities/tracefile/reader/NativeBinaryTraceFileReader.h>
+#include <osi-utilities/tracefile/reader/SingleChannelBinaryTraceFileReader.h>
 
 #include <optional>
 
@@ -96,7 +96,7 @@ const std::unordered_map<std::string, osi3::ReaderTopLevelMessage> kValidTypes =
                                                                                   {"StreamingUpdate", osi3::ReaderTopLevelMessage::kStreamingUpdate}};
 
 void printHelp() {
-    std::cout << "Usage: example_native_binary_reader <file_path> [--type <message_type>]\n\n"
+    std::cout << "Usage: example_single_channel_binary_reader <file_path> [--type <message_type>]\n\n"
               << "Arguments:\n"
               << "  file_path               Path to the OSI trace file\n"
               << "  --type <message_type>   Optional: Specify messages type if not stated in filename\n\n"
@@ -139,10 +139,12 @@ int main(const int argc, const char** argv) {
         return 1;
     }
 
+    std::cout << "Starting single channel binary reader example:" << std::endl;
+
     // Open the trace file
     // downstream functions of Open will guess the message type from the filename (options->message_type has the unknown value)
     // or use the provided cli argument value for the message type
-    auto trace_file_reader = osi3::NativeBinaryTraceFileReader();
+    auto trace_file_reader = osi3::SingleChannelBinaryTraceFileReader();
     if (!trace_file_reader.Open(options->file_path, options->message_type)) {
         std::cerr << "Error: Could not open file '" << options->file_path << "'\n\n";
         return 1;
@@ -156,6 +158,6 @@ int main(const int argc, const char** argv) {
         CastMsgAndPrintTimestamp(reading_result);
     }
 
-    std::cout << "Finished native binary reader example" << std::endl;
+    std::cout << "Finished single channel binary reader example" << std::endl;
     return 0;
 }

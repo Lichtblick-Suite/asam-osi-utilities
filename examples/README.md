@@ -32,24 +32,24 @@ It creates the example file `example_mcap.mcap` in the temp directory of your op
 ./example_mcap_writer
 ```
 
-### example_native_binary_reader
+### example_single_channel_binary_reader
 
 This example demonstrates how to read a native binary trace file into your application.
 It simply prints the message types and timestamps of the OSI trace file.
-You can try it with an example osi trace file generated with `example_native_binary_writer` (see following section) with
+You can try it with an example osi trace file generated with `example_single_channel_binary_writer` (see following section) with
 
 ```bash
-./example_native_binary_reader /tmp/example_native_binary_writer.osi --type SensorView
+./example_single_channel_binary_reader /tmp/<osi-version>_<protobuf-version>_<number-of-frames>_example_single_channel_binary_writer.osi --type SensorView
 ```
 
-### example_native_binary_writer
+### example_single_channel_binary_writer
 
 This example demonstrates how to write OSI data to a native binary file from your application.
 As an example, a SensorView message with one moving object is created and written to the OSI trace file.
-It creates the example file `example_native_binary_writer.osi` in the temp directory of your operating system, on Linux this is `/tmp`.
+It creates the example file `<osi-version>_<protobuf-version>_<number-of-frames>_example_single_channel_binary_writer.osi` in the temp directory of your operating system, on Linux this is `/tmp`.
 
 ```bash
-./example_native_binary_writer
+./example_single_channel_binary_writer
 ```
 
 ### example_txth_reader

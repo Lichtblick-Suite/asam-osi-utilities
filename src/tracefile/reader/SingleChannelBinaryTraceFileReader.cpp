@@ -3,18 +3,18 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#include "osi-utilities/tracefile/reader/NativeBinaryTraceFileReader.h"
+#include "osi-utilities/tracefile/reader/SingleChannelBinaryTraceFileReader.h"
 
 #include <filesystem>
 
 namespace osi3 {
 
-bool NativeBinaryTraceFileReader::Open(const std::filesystem::path& file_path, const ReaderTopLevelMessage message_type) {
+bool SingleChannelBinaryTraceFileReader::Open(const std::filesystem::path& file_path, const ReaderTopLevelMessage message_type) {
     message_type_ = message_type;
     return this->Open(file_path);
 }
 
-bool NativeBinaryTraceFileReader::Open(const std::filesystem::path& file_path) {
+bool SingleChannelBinaryTraceFileReader::Open(const std::filesystem::path& file_path) {
     // prevent opening again if already opened
     if (trace_file_.is_open()) {
         std::cerr << "ERROR: Opening file " << file_path << ", reader has already a file opened" << std::endl;
@@ -60,11 +60,11 @@ bool NativeBinaryTraceFileReader::Open(const std::filesystem::path& file_path) {
     return true;
 }
 
-void NativeBinaryTraceFileReader::Close() { trace_file_.close(); }
+void SingleChannelBinaryTraceFileReader::Close() { trace_file_.close(); }
 
-bool NativeBinaryTraceFileReader::HasNext() { return (trace_file_ && trace_file_.is_open() && trace_file_.peek() != EOF); }
+bool SingleChannelBinaryTraceFileReader::HasNext() { return (trace_file_ && trace_file_.is_open() && trace_file_.peek() != EOF); }
 
-std::optional<ReadResult> NativeBinaryTraceFileReader::ReadMessage() {
+std::optional<ReadResult> SingleChannelBinaryTraceFileReader::ReadMessage() {
     // check if ready and if there are messages left
     if (!this->HasNext()) {
         std::cerr << "Unable to read message: No more messages available in trace file or file not opened." << std::endl;
@@ -84,7 +84,7 @@ std::optional<ReadResult> NativeBinaryTraceFileReader::ReadMessage() {
     return result;
 }
 
-std::vector<char> NativeBinaryTraceFileReader::ReadNextMessageFromFile() {
+std::vector<char> SingleChannelBinaryTraceFileReader::ReadNextMessageFromFile() {
     uint32_t message_size = 0;
 
     if (!trace_file_.read(reinterpret_cast<char*>(&message_size), sizeof(message_size))) {

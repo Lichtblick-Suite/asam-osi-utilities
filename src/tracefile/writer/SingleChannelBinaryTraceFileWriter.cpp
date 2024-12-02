@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#include "osi-utilities/tracefile/writer/NativeBinaryTraceFileWriter.h"
+#include "osi-utilities/tracefile/writer/SingleChannelBinaryTraceFileWriter.h"
 
 #include "osi_groundtruth.pb.h"
 #include "osi_hostvehicledata.pb.h"
@@ -17,7 +17,7 @@
 
 namespace osi3 {
 
-bool NativeBinaryTraceFileWriter::Open(const std::filesystem::path& file_path) {
+bool SingleChannelBinaryTraceFileWriter::Open(const std::filesystem::path& file_path) {
     // check if at least .osi ending is present
     if (file_path.extension().string() != ".osi") {
         std::cerr << "ERROR: The trace file '" << file_path << "' must have a '.osi' extension." << std::endl;
@@ -44,13 +44,13 @@ bool NativeBinaryTraceFileWriter::Open(const std::filesystem::path& file_path) {
     return true;
 }
 
-void NativeBinaryTraceFileWriter::Close() {
+void SingleChannelBinaryTraceFileWriter::Close() {
         trace_file_.close();
 }
 
 
 template <typename T>
-bool NativeBinaryTraceFileWriter::WriteMessage(T top_level_message) {
+bool SingleChannelBinaryTraceFileWriter::WriteMessage(T top_level_message) {
     if (!(trace_file_ && trace_file_.is_open())) {
         std::cerr << "ERROR: cannot write message, file is not open\n";
         return false;
@@ -66,14 +66,14 @@ bool NativeBinaryTraceFileWriter::WriteMessage(T top_level_message) {
 }
 
 // Template instantiations for allowed OSI top-level messages
-template bool NativeBinaryTraceFileWriter::WriteMessage<osi3::GroundTruth>(osi3::GroundTruth);
-template bool NativeBinaryTraceFileWriter::WriteMessage<osi3::SensorData>(osi3::SensorData);
-template bool NativeBinaryTraceFileWriter::WriteMessage<osi3::SensorView>(osi3::SensorView);
-template bool NativeBinaryTraceFileWriter::WriteMessage<osi3::HostVehicleData>(osi3::HostVehicleData);
-template bool NativeBinaryTraceFileWriter::WriteMessage<osi3::TrafficCommand>(osi3::TrafficCommand);
-template bool NativeBinaryTraceFileWriter::WriteMessage<osi3::TrafficCommandUpdate>(osi3::TrafficCommandUpdate);
-template bool NativeBinaryTraceFileWriter::WriteMessage<osi3::TrafficUpdate>(osi3::TrafficUpdate);
-template bool NativeBinaryTraceFileWriter::WriteMessage<osi3::MotionRequest>(osi3::MotionRequest);
-template bool NativeBinaryTraceFileWriter::WriteMessage<osi3::StreamingUpdate>(osi3::StreamingUpdate);
+template bool SingleChannelBinaryTraceFileWriter::WriteMessage<osi3::GroundTruth>(osi3::GroundTruth);
+template bool SingleChannelBinaryTraceFileWriter::WriteMessage<osi3::SensorData>(osi3::SensorData);
+template bool SingleChannelBinaryTraceFileWriter::WriteMessage<osi3::SensorView>(osi3::SensorView);
+template bool SingleChannelBinaryTraceFileWriter::WriteMessage<osi3::HostVehicleData>(osi3::HostVehicleData);
+template bool SingleChannelBinaryTraceFileWriter::WriteMessage<osi3::TrafficCommand>(osi3::TrafficCommand);
+template bool SingleChannelBinaryTraceFileWriter::WriteMessage<osi3::TrafficCommandUpdate>(osi3::TrafficCommandUpdate);
+template bool SingleChannelBinaryTraceFileWriter::WriteMessage<osi3::TrafficUpdate>(osi3::TrafficUpdate);
+template bool SingleChannelBinaryTraceFileWriter::WriteMessage<osi3::MotionRequest>(osi3::MotionRequest);
+template bool SingleChannelBinaryTraceFileWriter::WriteMessage<osi3::StreamingUpdate>(osi3::StreamingUpdate);
 
 }  // namespace osi3

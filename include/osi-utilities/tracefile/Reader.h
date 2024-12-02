@@ -119,9 +119,9 @@ class TraceFileFactory {
      * @throws std::invalid_argument if the file extension is not supported
      *
      * Supported formats:
-     * - .osi: Native binary format (NativeBinaryTraceFileReader)
-     * - .mcap: MCAP format (MCAPTraceFileReader)
-     * - .txth: TXTH format (TXTHTraceFileReader)
+     * - .osi: Single channel binary format (SingleChannelBinaryTraceFileReader)
+     * - .txth: Single channel human-readable format (TXTHTraceFileReader)
+     * - .mcap: Multi channel binary format (MCAPTraceFileReader)
      *
      * @note It is still required to call Open(path) on the returned reader instance
      */

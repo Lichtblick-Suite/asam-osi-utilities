@@ -4,16 +4,16 @@
 //
 
 #include <gtest/gtest.h>
-#include "osi-utilities/tracefile/writer/NativeBinaryTraceFileWriter.h"
+#include "osi-utilities/tracefile/writer/SingleChannelBinaryTraceFileWriter.h"
 #include "osi_groundtruth.pb.h"
 #include "osi_sensorview.pb.h"
 
 #include <fstream>
 #include <filesystem>
 
-class NativeBinaryTraceFileWriterTest : public ::testing::Test {
+class SingleChannelBinaryTraceFileWriterTest : public ::testing::Test {
 protected:
-    osi3::NativeBinaryTraceFileWriter writer_;
+    osi3::SingleChannelBinaryTraceFileWriter writer_;
     const std::string test_file_gt_ = "test_write_gt_.osi";
     const std::string test_file_sv_ = "test_write_sv_.osi";
 
@@ -24,15 +24,15 @@ protected:
     }
 };
 
-TEST_F(NativeBinaryTraceFileWriterTest, OpenFile) {
+TEST_F(SingleChannelBinaryTraceFileWriterTest, OpenFile) {
     EXPECT_TRUE(writer_.Open(test_file_gt_));
 }
 
-TEST_F(NativeBinaryTraceFileWriterTest, OpenInvalidExtension) {
+TEST_F(SingleChannelBinaryTraceFileWriterTest, OpenInvalidExtension) {
     EXPECT_FALSE(writer_.Open("test.txt"));
 }
 
-TEST_F(NativeBinaryTraceFileWriterTest, WriteGroundTruthMessage) {
+TEST_F(SingleChannelBinaryTraceFileWriterTest, WriteGroundTruthMessage) {
     ASSERT_TRUE(writer_.Open(test_file_gt_));
 
     osi3::GroundTruth ground_truth;
@@ -55,7 +55,7 @@ TEST_F(NativeBinaryTraceFileWriterTest, WriteGroundTruthMessage) {
     EXPECT_EQ(read_gt.timestamp().nanos(), 456);
 }
 
-TEST_F(NativeBinaryTraceFileWriterTest, WriteSensorViewMessage) {
+TEST_F(SingleChannelBinaryTraceFileWriterTest, WriteSensorViewMessage) {
     ASSERT_TRUE(writer_.Open(test_file_sv_));
 
     osi3::SensorView sensor_view;
@@ -78,7 +78,7 @@ TEST_F(NativeBinaryTraceFileWriterTest, WriteSensorViewMessage) {
     EXPECT_EQ(read_sv.timestamp().nanos(), 101);
 }
 
-TEST_F(NativeBinaryTraceFileWriterTest, WriteMultipleMessages) {
+TEST_F(SingleChannelBinaryTraceFileWriterTest, WriteMultipleMessages) {
     ASSERT_TRUE(writer_.Open(test_file_gt_));
 
     osi3::GroundTruth gt1;
@@ -90,19 +90,19 @@ TEST_F(NativeBinaryTraceFileWriterTest, WriteMultipleMessages) {
     EXPECT_TRUE(writer_.WriteMessage(gt2));
 }
 
-TEST_F(NativeBinaryTraceFileWriterTest, WriteToClosedFile) {
+TEST_F(SingleChannelBinaryTraceFileWriterTest, WriteToClosedFile) {
     writer_.Close();
     osi3::GroundTruth ground_truth;
     EXPECT_FALSE(writer_.WriteMessage(ground_truth));
 }
 
-TEST_F(NativeBinaryTraceFileWriterTest, ReopenFile) {
+TEST_F(SingleChannelBinaryTraceFileWriterTest, ReopenFile) {
     ASSERT_TRUE(writer_.Open(test_file_gt_));
     writer_.Close();
     EXPECT_TRUE(writer_.Open(test_file_gt_));
 }
 
-TEST_F(NativeBinaryTraceFileWriterTest, WriteEmptyMessage) {
+TEST_F(SingleChannelBinaryTraceFileWriterTest, WriteEmptyMessage) {
     ASSERT_TRUE(writer_.Open(test_file_gt_));
     osi3::GroundTruth empty_gt;
     EXPECT_TRUE(writer_.WriteMessage(empty_gt));

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#include <osi-utilities/tracefile/writer/NativeBinaryTraceFileWriter.h>
+#include <osi-utilities/tracefile/writer/SingleChannelBinaryTraceFileWriter.h>
 
 #include <filesystem>
 
@@ -27,16 +27,16 @@ std::filesystem::path GenerateTempFilePath() {
     file_name += "_" + std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
     file_name += "_" + google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
     file_name += "_10";  // 10 frames
-    file_name += "_example-native-binary-writer.osi";
+    file_name += "_example_single_channel_binary_writer.osi";
     auto path = std::filesystem::temp_directory_path() / file_name;
     return path;
 }
 
 int main(int argc, const char** argv) {
-    std::cout << "Starting Native Binary Writer example:" << std::endl;
+    std::cout << "Starting single channel binary writer example:" << std::endl;
 
     // Create writer and open file
-    auto trace_file_writer = osi3::NativeBinaryTraceFileWriter();
+    auto trace_file_writer = osi3::SingleChannelBinaryTraceFileWriter();
     const auto trace_file_path = GenerateTempFilePath();
     std::cout << "Creating trace file at " << trace_file_path << std::endl;
     trace_file_writer.Open(trace_file_path);
@@ -79,6 +79,6 @@ int main(int argc, const char** argv) {
 
     trace_file_writer.Close();
 
-    std::cout << "Finished Native Binary Writer example" << std::endl;
+    std::cout << "Finished single channel binary writer example" << std::endl;
     return 0;
 }

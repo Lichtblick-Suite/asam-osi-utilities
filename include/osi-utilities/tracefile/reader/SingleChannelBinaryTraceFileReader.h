@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#ifndef OSIUTILITIES_TRACEFILE_READER_NATIVEBINARYTRACEFILEREADER_H_
-#define OSIUTILITIES_TRACEFILE_READER_NATIVEBINARYTRACEFILEREADER_H_
+#ifndef OSIUTILITIES_TRACEFILE_READER_SINGLECHANNELBINARYTRACEFILEREADER_H_
+#define OSIUTILITIES_TRACEFILE_READER_SINGLECHANNELBINARYTRACEFILEREADER_H_
 
 #include <fstream>
 #include <functional>
@@ -24,9 +24,11 @@
 namespace osi3 {
 
 /**
- * @brief Reader implementation for native binary OSI trace files
+ * @brief Implementation of TraceFileReader for binary format files containing OSI messages
+ *
+ * This class provides functionality to read OSI messages in the single binary channel format.
  */
-class NativeBinaryTraceFileReader final : public osi3::TraceFileReader {
+class SingleChannelBinaryTraceFileReader final : public osi3::TraceFileReader {
    public:
     bool Open(const std::filesystem::path& file_path) override;
 
@@ -90,4 +92,4 @@ class NativeBinaryTraceFileReader final : public osi3::TraceFileReader {
 };
 }  // namespace osi3
 
-#endif  // OSIUTILITIES_TRACEFILE_READER_NATIVEBINARYTRACEFILEREADER_H_
+#endif  // OSIUTILITIES_TRACEFILE_READER_SINGLECHANNELBINARYTRACEFILEREADER_H_

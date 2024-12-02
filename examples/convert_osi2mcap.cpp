@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 
-#include <osi-utilities/tracefile/reader/NativeBinaryTraceFileReader.h>
+#include <osi-utilities/tracefile/reader/SingleChannelBinaryTraceFileReader.h>
 #include <osi-utilities/tracefile/writer/MCAPTraceFileWriter.h>
 
 #include <filesystem>
@@ -157,7 +157,7 @@ int main(const int argc, const char** argv) {
     std::cout << "Input file: " << options->input_file_path << std::endl;
     std::cout << "Output file: " << options->output_file_path << std::endl;
 
-    auto trace_file_reader = osi3::NativeBinaryTraceFileReader();
+    auto trace_file_reader = osi3::SingleChannelBinaryTraceFileReader();
     if (!trace_file_reader.Open(options->input_file_path, options->message_type)) {
         std::cerr << "ERROR: Could not open input file " << options->input_file_path << std::endl;
         return 1;
@@ -200,6 +200,6 @@ int main(const int argc, const char** argv) {
         auto reading_result = trace_file_reader.ReadMessage();
         ProcessMessage(reading_result, trace_file_writer);
     }
-    std::cout << "Finished native binary to mcap converter" << std::endl;
+    std::cout << "Finished single channel binary to mcap converter" << std::endl;
     return 0;
 }

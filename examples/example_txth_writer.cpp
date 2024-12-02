@@ -33,7 +33,7 @@ std::filesystem::path GenerateTempFilePath() {
 }
 
 int main(int argc, const char** argv) {
-    std::cout << "Starting TXTH Writer example:" << std::endl;
+    std::cout << "Starting txth writer example:" << std::endl;
 
     // Create writer and open file
     auto trace_file_writer = osi3::TXTHTraceFileWriter();
@@ -79,6 +79,6 @@ int main(int argc, const char** argv) {
 
     trace_file_writer.Close();
 
-    std::cout << "Finished TXTH Writer example" << std::endl;
+    std::cout << "Finished txth writer example" << std::endl;
     return 0;
 }

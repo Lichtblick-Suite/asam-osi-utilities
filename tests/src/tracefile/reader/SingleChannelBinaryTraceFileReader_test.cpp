@@ -4,16 +4,16 @@
 //
 
 #include <gtest/gtest.h>
-#include "osi-utilities/tracefile/reader/NativeBinaryTraceFileReader.h"
+#include "osi-utilities/tracefile/reader/SingleChannelBinaryTraceFileReader.h"
 #include "osi_groundtruth.pb.h"
 #include "osi_sensorview.pb.h"
 
 #include <fstream>
 #include <filesystem>
 
-class NativeBinaryTraceFileReaderTest : public ::testing::Test {
+class SingleChannelBinaryTraceFileReaderTest : public ::testing::Test {
 protected:
-    osi3::NativeBinaryTraceFileReader reader_;
+    osi3::SingleChannelBinaryTraceFileReader reader_;
     const std::string test_file_gt_ = "test_gt_.osi";
     const std::string test_file_sv_ = "test_sv_.osi";
 
@@ -56,15 +56,15 @@ private:
     }
 };
 
-TEST_F(NativeBinaryTraceFileReaderTest, OpenGroundTruthFile) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, OpenGroundTruthFile) {
     EXPECT_TRUE(reader_.Open(test_file_gt_));
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, OpenSensorViewFile) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, OpenSensorViewFile) {
     EXPECT_TRUE(reader_.Open(test_file_sv_));
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, ReadGroundTruthMessage) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadGroundTruthMessage) {
     ASSERT_TRUE(reader_.Open(test_file_gt_));
     EXPECT_TRUE(reader_.HasNext());
 
@@ -78,7 +78,7 @@ TEST_F(NativeBinaryTraceFileReaderTest, ReadGroundTruthMessage) {
     EXPECT_EQ(gt->timestamp().nanos(), 456);
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, ReadSensorViewMessage) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadSensorViewMessage) {
     ASSERT_TRUE(reader_.Open(test_file_sv_));
     EXPECT_TRUE(reader_.HasNext());
 
@@ -92,7 +92,7 @@ TEST_F(NativeBinaryTraceFileReaderTest, ReadSensorViewMessage) {
     EXPECT_EQ(sv->timestamp().nanos(), 101);
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, PreventMultipleFileOpens) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, PreventMultipleFileOpens) {
     // First open should succeed
     EXPECT_TRUE(reader_.Open(test_file_gt_));
 
@@ -105,18 +105,18 @@ TEST_F(NativeBinaryTraceFileReaderTest, PreventMultipleFileOpens) {
 }
 
 
-TEST_F(NativeBinaryTraceFileReaderTest, HasNextReturnsFalseWhenEmpty) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, HasNextReturnsFalseWhenEmpty) {
     ASSERT_TRUE(reader_.Open(test_file_gt_));
     ASSERT_TRUE(reader_.HasNext());
     reader_.ReadMessage();
     EXPECT_FALSE(reader_.HasNext());
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, OpenNonexistentFile) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, OpenNonexistentFile) {
     EXPECT_FALSE(reader_.Open("nonexistent_file.osi"));
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, OpenInvalidFileFormat) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, OpenInvalidFileFormat) {
     std::string invalid_file = "invalid.bin";
     {
         std::ofstream file(invalid_file, std::ios::binary);
@@ -135,13 +135,13 @@ TEST_F(NativeBinaryTraceFileReaderTest, OpenInvalidFileFormat) {
     std::filesystem::remove(invalid_file);
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, OpenWithExplicitMessageType) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, OpenWithExplicitMessageType) {
     EXPECT_TRUE(reader_.Open(test_file_gt_, osi3::ReaderTopLevelMessage::kGroundTruth));
     reader_.Close();
     EXPECT_TRUE(reader_.Open(test_file_sv_, osi3::ReaderTopLevelMessage::kSensorView));
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, ReadEmptyMessage) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadEmptyMessage) {
     std::string empty_file = "empty_sv_99.osi";
     {
         std::ofstream file(empty_file, std::ios::binary);
@@ -154,7 +154,7 @@ TEST_F(NativeBinaryTraceFileReaderTest, ReadEmptyMessage) {
     std::filesystem::remove(empty_file);
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, ReadCorruptedMessageSize) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadCorruptedMessageSize) {
     std::string corrupted_file = "corrupted_size_sv_99.osi";
     {
         std::ofstream file(corrupted_file, std::ios::binary);
@@ -167,7 +167,7 @@ TEST_F(NativeBinaryTraceFileReaderTest, ReadCorruptedMessageSize) {
     std::filesystem::remove(corrupted_file);
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, ReadCorruptedMessageContent) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadCorruptedMessageContent) {
     std::string corrupted_file = "corrupted_content_sv_99.osi";
     {
         std::ofstream file(corrupted_file, std::ios::binary);
@@ -183,7 +183,7 @@ TEST_F(NativeBinaryTraceFileReaderTest, ReadCorruptedMessageContent) {
     std::filesystem::remove(corrupted_file);
 }
 
-TEST_F(NativeBinaryTraceFileReaderTest, ReadMessageAfterClose) {
+TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadMessageAfterClose) {
     ASSERT_TRUE(reader_.Open(test_file_gt_));
     reader_.Close();
     EXPECT_FALSE(reader_.HasNext());
