@@ -32,7 +32,7 @@ class SingleChannelBinaryTraceFileWriter final : public TraceFileWriter {
      * @return true if successful, false otherwise
      */
     template <typename T>
-    bool WriteMessage(T top_level_message);
+    bool WriteMessage(const T& top_level_message);
 
    private:
     std::ofstream trace_file_;

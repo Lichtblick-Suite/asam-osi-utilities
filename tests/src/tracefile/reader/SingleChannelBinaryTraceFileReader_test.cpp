@@ -31,11 +31,11 @@ protected:
 private:
     void CreateTestGroundTruthFile() const {
         std::ofstream file(test_file_gt_, std::ios::binary);
-        osi3::GroundTruth gt;
-        gt.mutable_timestamp()->set_seconds(123);
-        gt.mutable_timestamp()->set_nanos(456);
+        osi3::GroundTruth ground_truth;
+        ground_truth.mutable_timestamp()->set_seconds(123);
+        ground_truth.mutable_timestamp()->set_nanos(456);
 
-        std::string serialized = gt.SerializeAsString();
+        std::string serialized = ground_truth.SerializeAsString();
         uint32_t size = serialized.size();
 
         file.write(reinterpret_cast<char*>(&size), sizeof(size));
@@ -44,11 +44,11 @@ private:
 
     void CreateTestSensorViewFile() const {
         std::ofstream file(test_file_sv_, std::ios::binary);
-        osi3::SensorView sv;
-        sv.mutable_timestamp()->set_seconds(789);
-        sv.mutable_timestamp()->set_nanos(101);
+        osi3::SensorView sensor_view;
+        sensor_view.mutable_timestamp()->set_seconds(789);
+        sensor_view.mutable_timestamp()->set_nanos(101);
 
-        std::string serialized = sv.SerializeAsString();
+        std::string serialized = sensor_view.SerializeAsString();
         uint32_t size = serialized.size();
 
         file.write(reinterpret_cast<char*>(&size), sizeof(size));
@@ -72,10 +72,10 @@ TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadGroundTruthMessage) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result->message_type, osi3::ReaderTopLevelMessage::kGroundTruth);
 
-    auto* gt = dynamic_cast<osi3::GroundTruth*>(result->message.get());
-    ASSERT_NE(gt, nullptr);
-    EXPECT_EQ(gt->timestamp().seconds(), 123);
-    EXPECT_EQ(gt->timestamp().nanos(), 456);
+    auto* ground_truth = dynamic_cast<osi3::GroundTruth*>(result->message.get());
+    ASSERT_NE(ground_truth, nullptr);
+    EXPECT_EQ(ground_truth->timestamp().seconds(), 123);
+    EXPECT_EQ(ground_truth->timestamp().nanos(), 456);
 }
 
 TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadSensorViewMessage) {
@@ -86,10 +86,10 @@ TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadSensorViewMessage) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result->message_type, osi3::ReaderTopLevelMessage::kSensorView);
 
-    auto* sv = dynamic_cast<osi3::SensorView*>(result->message.get());
-    ASSERT_NE(sv, nullptr);
-    EXPECT_EQ(sv->timestamp().seconds(), 789);
-    EXPECT_EQ(sv->timestamp().nanos(), 101);
+    auto* sensor_view = dynamic_cast<osi3::SensorView*>(result->message.get());
+    ASSERT_NE(sensor_view, nullptr);
+    EXPECT_EQ(sensor_view->timestamp().seconds(), 789);
+    EXPECT_EQ(sensor_view->timestamp().nanos(), 101);
 }
 
 TEST_F(SingleChannelBinaryTraceFileReaderTest, PreventMultipleFileOpens) {
@@ -175,7 +175,7 @@ TEST_F(SingleChannelBinaryTraceFileReaderTest, ReadCorruptedMessageContent) {
         file.write(reinterpret_cast<char*>(&size), sizeof(size));
         // Write fewer data than specified in size
         std::string incomplete_data = "incomplete";
-        file.write(incomplete_data.c_str(), incomplete_data.size());
+        file.write(incomplete_data.c_str(), static_cast<std::streamsize>(incomplete_data.size()));
     }
 
     ASSERT_TRUE(reader_.Open(corrupted_file));

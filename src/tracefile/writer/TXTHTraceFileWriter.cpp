@@ -45,7 +45,7 @@ void TXTHTraceFileWriter::Close() {
 }
 
 template <typename T>
-bool TXTHTraceFileWriter::WriteMessage(T top_level_message) {
+bool TXTHTraceFileWriter::WriteMessage(const T& top_level_message) {
     if (!(trace_file_ && trace_file_.is_open())) {
         std::cerr << "Error: Cannot write message, file is not open\n";
         return false;
@@ -62,15 +62,15 @@ bool TXTHTraceFileWriter::WriteMessage(T top_level_message) {
 }
 
 // Template instantiations for allowed OSI top-level messages
-template bool TXTHTraceFileWriter::WriteMessage<osi3::GroundTruth>(osi3::GroundTruth);
-template bool TXTHTraceFileWriter::WriteMessage<osi3::SensorData>(osi3::SensorData);
-template bool TXTHTraceFileWriter::WriteMessage<osi3::SensorView>(osi3::SensorView);
-template bool TXTHTraceFileWriter::WriteMessage<osi3::HostVehicleData>(osi3::HostVehicleData);
-template bool TXTHTraceFileWriter::WriteMessage<osi3::TrafficCommand>(osi3::TrafficCommand);
-template bool TXTHTraceFileWriter::WriteMessage<osi3::TrafficCommandUpdate>(osi3::TrafficCommandUpdate);
-template bool TXTHTraceFileWriter::WriteMessage<osi3::TrafficUpdate>(osi3::TrafficUpdate);
-template bool TXTHTraceFileWriter::WriteMessage<osi3::MotionRequest>(osi3::MotionRequest);
-template bool TXTHTraceFileWriter::WriteMessage<osi3::StreamingUpdate>(osi3::StreamingUpdate);
+template bool TXTHTraceFileWriter::WriteMessage<osi3::GroundTruth>(const osi3::GroundTruth&);
+template bool TXTHTraceFileWriter::WriteMessage<osi3::SensorData>(const osi3::SensorData&);
+template bool TXTHTraceFileWriter::WriteMessage<osi3::SensorView>(const osi3::SensorView&);
+template bool TXTHTraceFileWriter::WriteMessage<osi3::HostVehicleData>(const osi3::HostVehicleData&);
+template bool TXTHTraceFileWriter::WriteMessage<osi3::TrafficCommand>(const osi3::TrafficCommand&);
+template bool TXTHTraceFileWriter::WriteMessage<osi3::TrafficCommandUpdate>(const osi3::TrafficCommandUpdate&);
+template bool TXTHTraceFileWriter::WriteMessage<osi3::TrafficUpdate>(const osi3::TrafficUpdate&);
+template bool TXTHTraceFileWriter::WriteMessage<osi3::MotionRequest>(const osi3::MotionRequest&);
+template bool TXTHTraceFileWriter::WriteMessage<osi3::StreamingUpdate>(const osi3::StreamingUpdate&);
 
 
 }  // namespace osi3

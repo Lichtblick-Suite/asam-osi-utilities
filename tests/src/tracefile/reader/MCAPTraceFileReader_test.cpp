@@ -13,7 +13,7 @@
 #include "osi_groundtruth.pb.h"
 #include "osi_sensorview.pb.h"
 
-static const char* JSON_SCHEMA_TEXT = R"({
+static const auto kJsonSchemaText = R"({
   "test_field1": "abc",
 })";
 
@@ -42,21 +42,21 @@ class McapTraceFileReaderTest : public ::testing::Test {
         writer_.AddChannel("sv", osi3::SensorView::descriptor());
 
         // Write GroundTruth message
-        auto gt = std::make_unique<osi3::GroundTruth>();
-        gt->mutable_timestamp()->set_seconds(0);
-        gt->mutable_timestamp()->set_nanos(456);
-        ASSERT_TRUE(writer_.WriteMessage(*gt, "gt"));
+        auto ground_truth = std::make_unique<osi3::GroundTruth>();
+        ground_truth->mutable_timestamp()->set_seconds(0);
+        ground_truth->mutable_timestamp()->set_nanos(456);
+        ASSERT_TRUE(writer_.WriteMessage(*ground_truth, "gt"));
 
         // Write SensorView message
-        auto sv = std::make_unique<osi3::SensorView>();
-        sv->mutable_timestamp()->set_seconds(1);
-        sv->mutable_timestamp()->set_nanos(101);
-        ASSERT_TRUE(writer_.WriteMessage(*sv, "sv"));
+        auto sensor_view = std::make_unique<osi3::SensorView>();
+        sensor_view->mutable_timestamp()->set_seconds(1);
+        sensor_view->mutable_timestamp()->set_nanos(101);
+        ASSERT_TRUE(writer_.WriteMessage(*sensor_view, "sv"));
 
         // Add non-OSI JSON channel and message
         auto* mcap_writer = writer_.GetMcapWriter();
 
-        auto json_schema = mcap::Schema("my_json_schema", "jsonschema", JSON_SCHEMA_TEXT);
+        auto json_schema = mcap::Schema("my_json_schema", "jsonschema", kJsonSchemaText);
         mcap_writer->addSchema(json_schema);
 
         mcap::Channel channel("json_topic", "json", json_schema.id);
@@ -99,10 +99,10 @@ TEST_F(McapTraceFileReaderTest, ReadGroundTruthMessage) {
     const auto result = reader_.ReadMessage();
     ASSERT_TRUE(result.has_value());
 
-    auto* gt = dynamic_cast<osi3::GroundTruth*>(result->message.get());
-    ASSERT_NE(gt, nullptr);
-    EXPECT_EQ(gt->timestamp().seconds(), 0);
-    EXPECT_EQ(gt->timestamp().nanos(), 456);
+    auto* ground_truth = dynamic_cast<osi3::GroundTruth*>(result->message.get());
+    ASSERT_NE(ground_truth, nullptr);
+    EXPECT_EQ(ground_truth->timestamp().seconds(), 0);
+    EXPECT_EQ(ground_truth->timestamp().nanos(), 456);
     EXPECT_EQ(result->channel_name, "gt");
 }
 
@@ -117,10 +117,10 @@ TEST_F(McapTraceFileReaderTest, ReadSensorViewMessage) {
     const auto result = reader_.ReadMessage();
     ASSERT_TRUE(result.has_value());
 
-    auto* sv = dynamic_cast<osi3::SensorView*>(result->message.get());
-    ASSERT_NE(sv, nullptr);
-    EXPECT_EQ(sv->timestamp().seconds(), 1);
-    EXPECT_EQ(sv->timestamp().nanos(), 101);
+    auto* sensor_view = dynamic_cast<osi3::SensorView*>(result->message.get());
+    ASSERT_NE(sensor_view, nullptr);
+    EXPECT_EQ(sensor_view->timestamp().seconds(), 1);
+    EXPECT_EQ(sensor_view->timestamp().nanos(), 101);
     EXPECT_EQ(result->channel_name, "sv");
 }
 

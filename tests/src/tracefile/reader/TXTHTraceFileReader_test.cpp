@@ -85,10 +85,10 @@ TEST_F(TxthTraceFileReaderTest, ReadGroundTruthMessage) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result->message_type, osi3::ReaderTopLevelMessage::kGroundTruth);
 
-    auto* gt = dynamic_cast<osi3::GroundTruth*>(result->message.get());
-    ASSERT_NE(gt, nullptr);
-    EXPECT_EQ(gt->timestamp().seconds(), 123);
-    EXPECT_EQ(gt->timestamp().nanos(), 456);
+    auto* ground_truth = dynamic_cast<osi3::GroundTruth*>(result->message.get());
+    ASSERT_NE(ground_truth, nullptr);
+    EXPECT_EQ(ground_truth->timestamp().seconds(), 123);
+    EXPECT_EQ(ground_truth->timestamp().nanos(), 456);
 }
 
 TEST_F(TxthTraceFileReaderTest, ReadSensorViewMessage) {
@@ -99,10 +99,10 @@ TEST_F(TxthTraceFileReaderTest, ReadSensorViewMessage) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result->message_type, osi3::ReaderTopLevelMessage::kSensorView);
 
-    auto* sv = dynamic_cast<osi3::SensorView*>(result->message.get());
-    ASSERT_NE(sv, nullptr);
-    EXPECT_EQ(sv->timestamp().seconds(), 789);
-    EXPECT_EQ(sv->timestamp().nanos(), 101);
+    auto* sensor_view = dynamic_cast<osi3::SensorView*>(result->message.get());
+    ASSERT_NE(sensor_view, nullptr);
+    EXPECT_EQ(sensor_view->timestamp().seconds(), 789);
+    EXPECT_EQ(sensor_view->timestamp().nanos(), 101);
 }
 
 TEST_F(TxthTraceFileReaderTest, PreventMultipleFileOpens) {
