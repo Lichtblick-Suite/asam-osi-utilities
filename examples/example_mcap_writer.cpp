@@ -22,14 +22,14 @@ int main(int argc, const char** argv) {
     const auto trace_file_path = GenerateTempFilePath();
     std::cout << "Creating trace_file at " << trace_file_path << std::endl;
 
-    mcap::McapWriterOptions options("osi");
+    mcap::McapWriterOptions mcap_options("osi");
     // Adapt chunk size according to data and usecase:
     // Example: ros2 is using 4 * 1024 * 1024)
-    options.chunkSize = 4 * 1024 * 1024;
+    mcap_options.chunkSize = 4 * 1024 * 1024;
     // Default: zstd
-    options.compression = mcap::Compression::Lz4;
+    mcap_options.compression = mcap::Compression::Lz4;
 
-    trace_file_writer.Open(trace_file_path, options);
+    trace_file_writer.Open(trace_file_path, mcap_options);
 
     // add required and optional metadata to the net.asam.osi.trace metadata record
     auto net_asam_osi_trace_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
