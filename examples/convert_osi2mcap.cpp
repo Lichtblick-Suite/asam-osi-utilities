@@ -168,7 +168,13 @@ int main(const int argc, const char** argv) {
     }
 
     auto trace_file_writer = osi3::MCAPTraceFileWriter();
-    if (!trace_file_writer.Open(options->output_file_path)) {
+    mcap::McapWriterOptions mcap_options("osi2mcap");
+    // Adapt chunk size according to data and usecase:
+    // Example: ros2 is using 4 * 1024 * 1024)
+    mcap_options.chunkSize = 4 * 1024 * 1024;
+    mcap_options.compression = mcap::Compression::Zstd;
+
+    if (!trace_file_writer.Open(options->output_file_path, mcap_options)) {
         std::cerr << "ERROR: Could not open output file " << options->output_file_path << std::endl;
         return 1;
     }
