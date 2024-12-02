@@ -6,6 +6,7 @@
 #include <osi-utilities/tracefile/reader/SingleChannelBinaryTraceFileReader.h>
 #include <osi-utilities/tracefile/writer/MCAPTraceFileWriter.h>
 
+#include <cstddef>
 #include <filesystem>
 
 #include "osi_groundtruth.pb.h"
@@ -17,6 +18,17 @@
 #include "osi_trafficcommand.pb.h"
 #include "osi_trafficcommandupdate.pb.h"
 #include "osi_trafficupdate.pb.h"
+
+// create a map to convert the compression type to a string and vice versa
+static const std::map<mcap::Compression, std::string> kCompressionEnumStringMap = {
+    {mcap::Compression::None, "none"}, {mcap::Compression::Lz4, "lz4"}, {mcap::Compression::Zstd, "zstd"}};
+static const std::map<std::string, mcap::Compression> kCompressionStringEnumMap = {
+    {"none", mcap::Compression::None}, {"lz4", mcap::Compression::Lz4}, {"zstd", mcap::Compression::Zstd}};
+// create a map to convert the compression level to a string and vice versa
+static const std::map<mcap::CompressionLevel, std::string> kCompressionLevelEnumStringMap = {
+    {mcap::CompressionLevel::Fastest, "fastest"}, {mcap::CompressionLevel::Fast, "fast"}, {mcap::CompressionLevel::Default, "default"}};
+static const std::map<std::string, mcap::CompressionLevel> kCompressionLevelStringEnumMap = {
+    {"fastest", mcap::CompressionLevel::Fastest}, {"fast", mcap::CompressionLevel::Fast}, {"default", mcap::CompressionLevel::Default}};
 
 std::optional<std::string> ExtractTimestampFromFileName(const std::filesystem::path& file_path) {
     // Get first 16 characters which should be the timestamp
@@ -104,6 +116,9 @@ struct ProgramOptions {
     std::filesystem::path input_file_path;
     std::filesystem::path output_file_path;
     osi3::ReaderTopLevelMessage message_type = osi3::ReaderTopLevelMessage::kUnknown;
+    size_t chunk_size = static_cast<size_t>(1024 * 768);      // Default upstream mcap is 768 KiB
+    mcap::Compression compression = mcap::Compression::Zstd;  // Default upstream mcap is Zstd
+    mcap::CompressionLevel compression_level = mcap::CompressionLevel::Default;
 };
 
 const std::unordered_map<std::string, osi3::ReaderTopLevelMessage> kValidTypes = {
@@ -119,10 +134,25 @@ void printHelp() {
               << "  input_file              Path to the input OSI trace file\n"
               << "  output_file             Path to the output MCAP file\n"
               << "  --input-type <message_type>   Optional: Specify input message type if not stated in filename\n\n"
-              << "Valid message types:\n";
+              << "\tValid message types:\n";
     for (const auto& [type, _] : kValidTypes) {
-        std::cout << "  " << type << "\n";
+        std::cout << "\t\t" << type << "\n";
     }
+    std::cout << "  --chunk_size <size>           Optional: Chunk size in bytes (default: 786432)\n"
+              << "  --compression <type>          Optional: Compression type (none, lz4, zstd) (default: zstd)\n"
+              << "  --compression_level <type>    Optional: Compression level (fastest, fast, default, slow, slowest) (default: default)\n\n";
+}
+
+mcap::Compression parseCompressionType(const std::string& compression_str) {
+    std::string lower_compression_str = compression_str;
+    std::transform(lower_compression_str.begin(), lower_compression_str.end(), lower_compression_str.begin(), ::tolower);
+    return kCompressionStringEnumMap.at(lower_compression_str);
+}
+
+mcap::CompressionLevel parseCompressionLevel(const std::string& level_str) {
+    std::string lower_level = level_str;
+    std::transform(lower_level.begin(), lower_level.end(), lower_level.begin(), ::tolower);
+    return kCompressionLevelStringEnumMap.at(lower_level);
 }
 
 std::optional<ProgramOptions> parseArgs(const int argc, const char** argv) {
@@ -137,18 +167,30 @@ std::optional<ProgramOptions> parseArgs(const int argc, const char** argv) {
     options.message_type = osi3::ReaderTopLevelMessage::kUnknown;
 
     for (int i = 3; i < argc; i++) {
-        if (std::string arg = argv[i]; arg == "--input-type" && i + 1 < argc) {
-            const std::string type_str = argv[++i];
-            auto types_it = kValidTypes.find(type_str);
-            if (types_it == kValidTypes.end()) {
-                std::cerr << "Error: Invalid message type '" << type_str << "'\n\n";
-                printHelp();
-                return std::nullopt;
+        const std::string arg = argv[i];
+        try {
+            if (arg == "--input-type" && i + 1 < argc) {
+                const std::string type_str = argv[++i];
+                auto types_it = kValidTypes.find(type_str);
+                if (types_it == kValidTypes.end()) {
+                    throw std::invalid_argument("Invalid message type: " + type_str);
+                }
+                options.message_type = types_it->second;
+            } else if (arg == "--chunk_size" && i + 1 < argc) {
+                options.chunk_size = std::stoull(argv[++i]);
+            } else if (arg == "--compression" && i + 1 < argc) {
+                options.compression = parseCompressionType(argv[++i]);
+            } else if (arg == "--compression_level" && i + 1 < argc) {
+                options.compression_level = parseCompressionLevel(argv[++i]);
+            } else {
+                throw std::invalid_argument("Invalid argument: " + arg);
             }
-            options.message_type = types_it->second;
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << "\n\n";
+            printHelp();
+            return std::nullopt;
         }
     }
-
     return options;
 }
 
@@ -158,22 +200,33 @@ int main(const int argc, const char** argv) {
         return 1;
     }
 
-    std::cout << "Input file: " << options->input_file_path << std::endl;
+    std::cout << "Input file:  " << options->input_file_path << std::endl;
     std::cout << "Output file: " << options->output_file_path << std::endl;
 
+    // create single channel trace file (.osi) reader
     auto trace_file_reader = osi3::SingleChannelBinaryTraceFileReader();
     if (!trace_file_reader.Open(options->input_file_path, options->message_type)) {
         std::cerr << "ERROR: Could not open input file " << options->input_file_path << std::endl;
         return 1;
     }
 
+    // create MCAP writer
     auto trace_file_writer = osi3::MCAPTraceFileWriter();
-    mcap::McapWriterOptions mcap_options("osi2mcap");
-    // Adapt chunk size according to data and usecase:
-    // Example: ros2 is using 4 * 1024 * 1024)
-    mcap_options.chunkSize = 4 * 1024 * 1024;
-    mcap_options.compression = mcap::Compression::Zstd;
 
+    // set MCAP options
+    mcap::McapWriterOptions mcap_options("osi2mcap");
+    mcap_options.chunkSize = options->chunk_size;
+    mcap_options.compression = options->compression;
+    mcap_options.compressionLevel = options->compression_level;
+
+    // print information about chunk size and compression
+    std::cout << "MCAP options:" << "\n";
+    std::cout << "\tchunk size: " << mcap_options.chunkSize << "\n";
+
+    std::cout << "\tcompression: " << kCompressionEnumStringMap.at(mcap_options.compression) << "\n";
+    std::cout << "\tcompression level: " << kCompressionLevelEnumStringMap.at(mcap_options.compressionLevel) << "\n";
+
+    // open output file with options
     if (!trace_file_writer.Open(options->output_file_path, mcap_options)) {
         std::cerr << "ERROR: Could not open output file " << options->output_file_path << std::endl;
         return 1;
@@ -182,16 +235,15 @@ int main(const int argc, const char** argv) {
     // add required and optional metadata to the net.asam.osi.trace metadata record
     auto net_asam_osi_trace_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
     // Add optional metadata to the net.asam.osi.trace metadata record, as recommended by the OSI specification.
-    net_asam_osi_trace_metadata.metadata["description"] = "Converted from " + options->input_file_path.string(); // optional field
-    net_asam_osi_trace_metadata.metadata["creation_time"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString(); // optional field
+    net_asam_osi_trace_metadata.metadata["description"] = "Converted from " + options->input_file_path.string();  // optional field
+    net_asam_osi_trace_metadata.metadata["creation_time"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString();  // optional field
     if (const auto timestamp_from_osi_file = ExtractTimestampFromFileName(options->input_file_path)) {
-        net_asam_osi_trace_metadata.metadata["zero_time"] = timestamp_from_osi_file.value(); // optional field
+        net_asam_osi_trace_metadata.metadata["zero_time"] = timestamp_from_osi_file.value();  // optional field
     }
     if (!trace_file_writer.AddFileMetadata(net_asam_osi_trace_metadata)) {
         std::cerr << "Failed to add required metadata to trace_file." << std::endl;
         exit(1);
     }
-
 
     const google::protobuf::Descriptor* descriptor = nullptr;
     try {
