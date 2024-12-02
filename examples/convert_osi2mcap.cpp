@@ -176,7 +176,7 @@ int main(const int argc, const char** argv) {
     // add required and optional metadata to the net.asam.osi.trace metadata record
     auto net_asam_osi_trace_metadata = osi3::MCAPTraceFileWriter::PrepareRequiredFileMetadata();
     // Add optional metadata to the net.asam.osi.trace metadata record, as recommended by the OSI specification.
-    net_asam_osi_trace_metadata.metadata["description"] = "Converted from " + options->output_file_path.string(); // optional field
+    net_asam_osi_trace_metadata.metadata["description"] = "Converted from " + options->input_file_path.string(); // optional field
     net_asam_osi_trace_metadata.metadata["creation_time"] = osi3::MCAPTraceFileWriter::GetCurrentTimeAsString(); // optional field
     if (const auto timestamp_from_osi_file = ExtractTimestampFromFileName(options->input_file_path)) {
         net_asam_osi_trace_metadata.metadata["zero_time"] = timestamp_from_osi_file.value(); // optional field
