@@ -32,7 +32,7 @@ sudo apt install build-essential cmake libzstd-dev liblz4-dev protobuf-compiler 
 
 ### Install required dependencies on Windows
 
-- Compiler (e.g. MSVC)
+- Compiler (e.g. [MS Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/de/downloads/#build-tools-for-visual-studio-2022))
 - [CMake](https://cmake.org/download/)
 - [Doxygen](https://www.doxygen.nl/download.html)
 - [zstd](https://github.com/facebook/zstd)
