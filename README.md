@@ -52,6 +52,7 @@ sudo apt install build-essential cmake libzstd-dev liblz4-dev protobuf-compiler 
    > vcpkg install lz4
    > vcpkg install zstd
    > vcpkg install gtest
+   > vcpkg install pthreads
    ```
 
 ### Environment variables
