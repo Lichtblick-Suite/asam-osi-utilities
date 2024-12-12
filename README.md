@@ -41,14 +41,14 @@ sudo apt install build-essential cmake libzstd-dev liblz4-dev protobuf-compiler 
 - [pkg-config](https://stackoverflow.com/a/25605631/2883130)
 - [gtest](https://google.github.io/googletest/)
 
-> **_NOTE:_** You can use [vcpkg](https://github.com/microsoft/vcpkg) and [chocolatey](https://chocolatey.org/) to install the following dependencies:
+> **_NOTE:_** Use the protobuf installation instructions for Windows from [OSI](https://opensimulationinterface.github.io/osi-antora-generator/asamosi/latest/interface/setup/installing_prerequisites.html#_windows) to create the triplets file. You can use [vcpkg](https://github.com/microsoft/vcpkg) and [chocolatey](https://chocolatey.org/) to install the following dependencies:
 
    ```bash
    > choco install git
    > choco install cmake
    > choco install pkgconfiglite
    >
-   > vcpkg install protobuf[zlib] protobuf[zlib]:x64-windows
+   > vcpkg install --triplet=x64-windows-static-md protobuf
    > vcpkg install lz4
    > vcpkg install zstd
    > vcpkg install gtest
