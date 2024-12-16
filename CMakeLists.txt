@@ -14,14 +14,13 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 option(USE_EXTERNAL_OSI "Use an external version of open_simulation_interface" OFF)
 option(LINK_WITH_SHARED_OSI "Link utils with shared OSI library instead of statically linking" OFF)
 
-# Locate open_simulation_interface using internal or find_package.
+# Locate open_simulation_interface
 if (USE_EXTERNAL_OSI)
-    # if you use this library in your project, you need to add
-    # something lik list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/lib/open-simulation-interface)
-    # to your CMakeLists.txt to find the open_simulation_interface package.
+    # if you use this library in your own project, you need to add
+    # something like list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/lib/open-simulation-interface)
+    # to your CMakeLists.txt so that we can fine the open_simulation_interface package.
     find_package(open_simulation_interface QUIET REQUIRED)
     message(STATUS "Using external OSI, provided by ${open_simulation_interface_DIR}")
-
 else ()
     # Download and use our own open_simulation_interface package.
     include(FetchContent)
