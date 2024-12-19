@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
-project(osi-utilities)
+project(asam-osi-utilities)
 
-# Som features (e.g. mcap) require at least C++17
+# Some features (e.g. mcap) require at least C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Generate compile_commands.json for clang based tools
@@ -14,20 +14,25 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 option(USE_EXTERNAL_OSI "Use an external version of open_simulation_interface" OFF)
 option(LINK_WITH_SHARED_OSI "Link utils with shared OSI library instead of statically linking" OFF)
 
-# Locate open_simulation_interface using find_package or custom path.
+# Locate open_simulation_interface
 if (USE_EXTERNAL_OSI)
-    message(FATAL_ERROR "Not implemented yet")
+    # if you use this library in your own project, you need to add
+    # something like list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/lib/open-simulation-interface)
+    # to your CMakeLists.txt so that we can fine the open_simulation_interface package.
+    find_package(open_simulation_interface QUIET REQUIRED)
+    message(STATUS "Using external OSI, provided by ${open_simulation_interface_DIR}")
 else ()
     # Download and use our own open_simulation_interface package.
     include(FetchContent)
+    message(STATUS "Using internal OSI, downloading open_simulation_interface...")
     FetchContent_Declare(
             open_simulation_interface
             GIT_REPOSITORY https://github.com/OpenSimulationInterface/open-simulation-interface.git
             GIT_TAG v3.7.0
     )
     FetchContent_MakeAvailable(open_simulation_interface)
-    set(OSI_INCLUDE_DIR ${open_simulation_interface_BINARY_DIR})
 endif ()
+
 
 # option to enable coverage reporting
 option(CODE_COVERAGE "Enable coverage reporting" OFF)

@@ -20,6 +20,7 @@ add_executable(
         ${src_sources}
 )
 target_link_libraries(unit_tests PRIVATE GTest::gtest_main)
+
 # see src/CMakeLists.txt
 target_compile_definitions(unit_tests PRIVATE OSI_TRACE_FILE_SPEC_VERSION="3.7.1")
 
@@ -28,8 +29,9 @@ if (LINK_WITH_SHARED_OSI)
     target_link_libraries(unit_tests PRIVATE open_simulation_interface)
 else ()
     target_link_libraries(unit_tests PRIVATE open_simulation_interface_pic)
-    include_directories(${OSI_INCLUDE_DIR})
 endif ()
+include_directories(${open_simulation_interface_BINARY_DIR})
+
 
 # get mcap and its dependencies
 find_package(PkgConfig REQUIRED)
