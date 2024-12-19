@@ -190,11 +190,17 @@ uint16_t MCAPTraceFileWriter::AddChannel(const std::string& topic, const google:
         path_schema = *it_schema;
     }
 
-    // add osi version to channel metadata as required by spec.
-    const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
-    channel_metadata["net.asam.osi.trace.channel.osi_version"] =
-        std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
-    channel_metadata["net.asam.osi.trace.channel.protobuf_version"] = google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
+    // add osi version (if not present) to channel metadata as required by spec.
+    if (channel_metadata.find("net.asam.osi.trace.channel.osi_version") == channel_metadata.end()) {
+        const auto osi_version = osi3::InterfaceVersion::descriptor()->file()->options().GetExtension(osi3::current_interface_version);
+        channel_metadata["net.asam.osi.trace.channel.osi_version"] =
+       std::to_string(osi_version.version_major()) + "." + std::to_string(osi_version.version_minor()) + "." + std::to_string(osi_version.version_patch());
+    }
+
+    // add protobuf version (if not present) to channel metadata as required by spec.
+    if (channel_metadata.find("net.asam.osi.trace.channel.protobuf_version") == channel_metadata.end()) {
+        channel_metadata["net.asam.osi.trace.channel.protobuf_version"] = google::protobuf::internal::VersionString(GOOGLE_PROTOBUF_VERSION);
+    }
 
     // add the channel to the writer/mcap file
     mcap::Channel channel(topic, "protobuf", path_schema.id, channel_metadata);
