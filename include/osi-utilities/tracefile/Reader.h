@@ -110,7 +110,7 @@ class TraceFileReader {
 /**
  * @brief Factory class for creating trace file readers based on file extensions
  */
-class TraceFileFactory {
+class TraceFileReaderFactory {
    public:
     /**
      * @brief Creates a reader instance based on the file extension
