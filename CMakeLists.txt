@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Generate compile_commands.json for clang based tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_POLICY_DEFAULT_CMP0135 NEW)
+
 # Add the include folder for public headers
 include_directories(${PROJECT_SOURCE_DIR}/include)
 

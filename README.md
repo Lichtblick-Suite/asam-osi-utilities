@@ -10,16 +10,16 @@ A utility library that provides essential tools, helper functions, and implement
 
 - Cross-platform C++ library and Python APIs
   - > **_NOTE:_**  Python API is planned but not yet implemented.
-  - > **_NOTE:_**  Windows should be supported but not yet tested, contributions welcome!
 - Easily integrate dealing with OSI data and trace files into your own projects
 - More OSI utility features planned, feature requests and pull requests welcome!
 
 ## Build Instructions
 
-### Install required dependencies
+### Install required dependencies on Linux
 
 - Compiler (e.g. GCC, Clang, MSVC)
 - [CMake](https://cmake.org/download/)
+- [Doxygen](https://www.doxygen.nl/download.html)
 - [zstd](https://github.com/facebook/zstd)
 - [lz4](https://github.com/lz4/lz4)
 - [Protobuf](https://github.com/protocolbuffers/protobuf)
@@ -30,6 +30,39 @@ A utility library that provides essential tools, helper functions, and implement
 sudo apt install build-essential cmake libzstd-dev liblz4-dev protobuf-compiler doxygen
 ```
 
+### Install required dependencies on Windows
+
+- Compiler (e.g. [MS Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/de/downloads/#build-tools-for-visual-studio-2022))
+- [CMake](https://cmake.org/download/)
+- [Doxygen](https://www.doxygen.nl/download.html)
+- [zstd](https://github.com/facebook/zstd)
+- [lz4](https://github.com/lz4/lz4)
+- [Protobuf](https://github.com/protocolbuffers/protobuf)
+- [pkg-config](https://stackoverflow.com/a/25605631/2883130)
+- [gtest](https://google.github.io/googletest/)
+
+> **_NOTE:_** Use the protobuf installation instructions for Windows from [OSI](https://opensimulationinterface.github.io/osi-antora-generator/asamosi/latest/interface/setup/installing_prerequisites.html#_windows) to create the triplets file. You can use [vcpkg](https://github.com/microsoft/vcpkg) and [chocolatey](https://chocolatey.org/) to install the following dependencies:
+
+   ```bash
+   > choco install git
+   > choco install cmake
+   > choco install pkgconfiglite
+   >
+   > vcpkg install --triplet=x64-windows-static-md protobuf
+   > vcpkg install lz4
+   > vcpkg install zstd
+   > vcpkg install gtest
+   > vcpkg install pthreads
+   ```
+
+### Environment variables
+
+Make sure that the `/bin` folders of the depedencies are added to your `$PATH`. In addition set the following variables:
+
+```bash
+CMAKE_PREFIX_PATH=C:/path/to/vcpkg/installed/x64-windows
+```
+
 ### Build
 
 Clone the repository incl. submodules
@@ -38,16 +71,11 @@ Clone the repository incl. submodules
 git clone --recurse-submodules https://github.com/Lichtblick-Suite/asam-osi-utilities.git
 ```
 
-Create build directory and configure using CMake
+Create build directory and configure using CMake and build afterwards:
 
 ```bash
 mkdir build && cd build
 cmake ..
-```
-
-Build using CMake
-
-```bash
 cmake --build . -j4
 ```
 
